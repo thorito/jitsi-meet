@@ -1,6 +1,9 @@
+/* global __DEV__ */
+
 import React, { Component } from 'react';
 import { AppRegistry, Linking } from 'react-native';
 import { createStore } from 'redux';
+import createLogger from 'redux-logger';
 import Thunk from 'redux-thunk';
 
 import config from './config';
@@ -17,7 +20,18 @@ const reducer = ReducerRegistry.combineReducers();
 // 3rd party middleware:
 // - Thunk - allows us to dispatch async actions easily. For more info
 // @see https://github.com/gaearon/redux-thunk.
-const middleware = MiddlewareRegistry.applyMiddleware(Thunk);
+// - Logger - logs every dispatched action. Only enabled for development.
+// For more info @see https://github.com/evgenyrodionov/redux-logger
+const reduxLogger = createLogger({
+    actionTransformer: action => {
+        return {
+            ...action,
+            type: String(action.type)
+        };
+    },
+    predicate: () => __DEV__
+});
+const middleware = MiddlewareRegistry.applyMiddleware(Thunk, reduxLogger);
 
 // Create Redux store with our reducer and middleware.
 const store = createStore(reducer, middleware);
