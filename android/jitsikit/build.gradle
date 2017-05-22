@@ -1,0 +1,49 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        publishNonDefault true
+    }
+
+    buildTypes {
+        debug {}
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile project(':react-native-background-timer')
+    compile project(':react-native-immersive')
+    compile project(':react-native-keep-awake')
+    compile project(':react-native-vector-icons')
+    compile project(':react-native-webrtc')
+    compile 'com.facebook.react:react-native:+'
+}
+
+gradle.projectsEvaluated {
+    android.buildTypes.all { buildType ->
+        def buildNameCapitalized = "${buildType.name.capitalize()}"
+        def currentFontTask = tasks.create(name: "${buildType.name}CopyFonts", type: Copy) {
+            from("${projectDir}/../../node_modules/react-native-vector-icons/Fonts/")
+            into("${buildDir}/intermediates/bundles/${buildType.name}/assets/fonts")
+        }
+
+        currentFontTask.dependsOn("merge${buildNameCapitalized}Resources")
+        currentFontTask.dependsOn("merge${buildNameCapitalized}Assets")
+
+        Task dependentTask = tasks.findByPath( "process${buildNameCapitalized}Resources")
+        if (dependentTask != null) {
+            dependentTask.dependsOn(currentFontTask)
+        }
+    }
+}

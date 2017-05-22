@@ -1,7 +1,6 @@
-package org.jitsi.meet.audiomode;
+package org.jitsi.jitsikit.audiomode;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;

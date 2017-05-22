@@ -1,4 +1,4 @@
-package org.jitsi.meet.proximity;
+package org.jitsi.jitsikit.proximity;
 
 import android.content.Context;
 import android.os.PowerManager;

@@ -1,4 +1,4 @@
-package org.jitsi.meet.audiomode;
+package org.jitsi.jitsikit.audiomode;
 
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;

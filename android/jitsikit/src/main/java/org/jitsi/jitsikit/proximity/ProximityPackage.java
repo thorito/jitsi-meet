@@ -1,4 +1,4 @@
-package org.jitsi.meet.audiomode;
+package org.jitsi.jitsikit.proximity;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -11,9 +11,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Implements {@link ReactPackage} for {@link AudioModeModule}.
+ * Implements {@link ReactPackage} for {@link ProximityModule}.
  */
-public class AudioModePackage implements ReactPackage {
+public class ProximityPackage implements ReactPackage {
     /**
      * {@inheritDoc}
      */
@@ -32,7 +32,7 @@ public class AudioModePackage implements ReactPackage {
             ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
 
-        modules.add(new AudioModeModule(reactContext));
+        modules.add(new ProximityModule(reactContext));
 
         return modules;
     }
