@@ -1,6 +1,7 @@
 /* @flow */
 
-import { CONFERENCE_LEFT } from '../conference';
+import { CONFERENCE_LEFT, SET_ROOM } from '../conference';
+import { parseURLParams } from '../config';
 import { MiddlewareRegistry } from '../redux';
 import { setTrackMuted, TRACK_ADDED } from '../tracks';
 
@@ -29,6 +30,11 @@ MiddlewareRegistry.register(store => next => action => {
     case TRACK_ADDED:
         action.track.local && _syncTrackMutedState(store, action.track);
         break;
+
+    case SET_ROOM:
+        // _setRoom(store, action);
+        break;
+
     }
 
     return result;
@@ -49,6 +55,38 @@ function _resetInitialMediaState(store) {
     (state.video.facingMode !== CAMERA_FACING_MODE.USER)
         && dispatch(setCameraFacingMode(CAMERA_FACING_MODE.USER));
     state.video.muted && dispatch(setVideoMuted(false));
+}
+
+/**
+ * TODO.
+ *
+ * @param {Store} store - Redux store.
+ * @param {Action} action - The Redux action <tt>SET_RROM</tt> which is
+ * being dispatched in the specified <tt>store</tt>.
+ * @private
+ * @returns {void}
+ */
+function _setRoom({ dispatch, getState }, action) {
+    if (action.room) {
+        let {
+            startWithAudioMuted,
+            startWithVideoMuted
+        } = getState()['features/base/config'];
+
+        const { locationURL } = getState()['features/base/connection'];
+        const params = parseURLParams(locationURL);
+
+        if (typeof params['config.startWithAudioMuted'] !== 'undefined') {
+            startWithAudioMuted = params['config.startWithAudioMuted'];
+        }
+
+        if (typeof params['config.startWithVideoMuted'] !== 'undefined') {
+            startWithVideoMuted = params['config.startWithVideoMuted'];
+        }
+
+        dispatch(setAudioMuted(Boolean(startWithAudioMuted)));
+        dispatch(setVideoMuted(Boolean(startWithVideoMuted)));
+    }
 }
 
 /**
