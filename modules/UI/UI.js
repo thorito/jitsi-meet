@@ -25,7 +25,6 @@ import { FEEDBACK_REQUEST_IN_PROGRESS } from './UIErrors';
 import { debounce } from "../util/helpers";
 
 import { updateDeviceList } from '../../react/features/base/devices';
-import { setAudioMuted, setVideoMuted } from '../../react/features/base/media';
 import {
     openDeviceSelectionDialog
 } from '../../react/features/device-selection';
@@ -688,7 +687,6 @@ UI.askForNickname = function () {
 UI.setAudioMuted = function (id, muted) {
     VideoLayout.onAudioMute(id, muted);
     if (APP.conference.isLocalId(id)) {
-        APP.store.dispatch(setAudioMuted(muted));
         APP.conference.updateAudioIconEnabled();
     }
 };
@@ -699,7 +697,6 @@ UI.setAudioMuted = function (id, muted) {
 UI.setVideoMuted = function (id, muted) {
     VideoLayout.onVideoMute(id, muted);
     if (APP.conference.isLocalId(id)) {
-        APP.store.dispatch(setVideoMuted(muted));
         APP.conference.updateVideoIconEnabled();
     }
 };

@@ -358,6 +358,8 @@ function _getLocalTracksToChange(currentTracks, newTracks) {
  */
 export function setTrackMuted(track, muted) {
     return dispatch => {
+        muted = Boolean(muted); // eslint-disable-line no-param-reassign
+
         if (track.isMuted() === muted) {
             return Promise.resolve();
         }
