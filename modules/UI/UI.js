@@ -24,7 +24,6 @@ import Settings from "./../settings/Settings";
 import { FEEDBACK_REQUEST_IN_PROGRESS } from './UIErrors';
 import { debounce } from "../util/helpers";
 
-import { updateDeviceList } from '../../react/features/base/devices';
 import {
     openDeviceSelectionDialog
 } from '../../react/features/device-selection';
@@ -1070,7 +1069,6 @@ UI.onLocalRaiseHandChanged = function (isRaisedHand) {
  * @param {object[]} devices new list of available devices
  */
 UI.onAvailableDevicesChanged = function (devices) {
-    APP.store.dispatch(updateDeviceList(devices));
     APP.conference.updateAudioIconEnabled();
     APP.conference.updateVideoIconEnabled();
 };

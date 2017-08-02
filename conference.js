@@ -35,7 +35,9 @@ import {
 } from './react/features/base/lib-jitsi-meet';
 import {
     setAudioAvailable,
-    setVideoAvailable
+    setAudioMuted,
+    setVideoAvailable,
+    setVideoMuted
 } from './react/features/base/media';
 import {
     localParticipantConnectionStatusChanged,
@@ -175,49 +177,23 @@ function getDisplayName(id) {
 }
 
 /**
- * Mute or unmute local audio stream if it exists.
+ * Mute or unmute local audio stream.
  * @param {boolean} muted - if audio stream should be muted or unmuted.
  *
- * @returns {Promise} resolved in case mute/unmute operations succeeds or
- * rejected with an error if something goes wrong. It is expected that often
- * the error will be of the {@link JitsiTrackError} type, but it's not
- * guaranteed.
+ * @returns {void}
  */
 function muteLocalAudio(muted) {
-    return muteLocalMedia(localAudio, muted);
+    APP.store.dispatch(setAudioMuted(muted));
 }
 
 /**
- * Mute or unmute local media stream if it exists.
- * @param {JitsiLocalTrack} localTrack
- * @param {boolean} muted
- *
- * @returns {Promise} resolved in case mute/unmute operations succeeds or
- * rejected with an error if something goes wrong. It is expected that often
- * the error will be of the {@link JitsiTrackError} type, but it's not
- * guaranteed.
- */
-function muteLocalMedia(localTrack, muted) {
-    if (!localTrack) {
-        return Promise.resolve();
-    }
-
-    const method = muted ? 'mute' : 'unmute';
-
-    return localTrack[method]();
-}
-
-/**
- * Mute or unmute local video stream if it exists.
+ * Mute or unmute local video stream.
  * @param {boolean} muted if video stream should be muted or unmuted.
  *
- * @returns {Promise} resolved in case mute/unmute operations succeeds or
- * rejected with an error if something goes wrong. It is expected that often
- * the error will be of the {@link JitsiTrackError} type, but it's not
- * guaranteed.
+ * @returns {void}
  */
 function muteLocalVideo(muted) {
-    return muteLocalMedia(localVideo, muted);
+    APP.store.dispatch(setVideoMuted(muted));
 }
 
 /**
@@ -785,14 +761,18 @@ export default {
                 })
                 .then(audioTrack => this.useAudioStream(audioTrack));
         } else {
-            const oldMutedStatus = this.audioMuted;
+            //const oldMutedStatus = this.audioMuted;
 
-            muteLocalAudio(mute)
+            muteLocalAudio(mute);
+
+            /*
                 .catch(error => {
                     maybeShowErrorDialog(error);
                     this.audioMuted = oldMutedStatus;
                     APP.UI.setAudioMuted(this.getMyUserId(), this.audioMuted);
                 });
+
+                */
         }
     },
     /**
@@ -854,14 +834,18 @@ export default {
                 })
                 .then(videoTrack => this.useVideoStream(videoTrack));
         } else {
-            const oldMutedStatus = this.videoMuted;
+            //const oldMutedStatus = this.videoMuted;
 
-            muteLocalVideo(mute)
+            muteLocalVideo(mute);
+
+            /*
                 .catch(error => {
                     maybeShowErrorDialog(error);
                     this.videoMuted = oldMutedStatus;
                     APP.UI.setVideoMuted(this.getMyUserId(), this.videoMuted);
                 });
+
+                */
         }
     },
     /**
@@ -2088,6 +2072,8 @@ export default {
                 this.muteVideo(audioOnly);
             }
 
+            console.log('AUDIO ONLYYYYY');
+
             // Immediately update the UI by having remote videos and the large
             // video update themselves instead of waiting for some other event
             // to cause the update, usually PARTICIPANT_CONN_STATUS_CHANGED.
@@ -2095,6 +2081,8 @@ export default {
             // immediately and in all situations, for example because a remote
             // participant is having connection trouble so no status changes.
             APP.UI.updateAllVideos();
+
+            console.log('22222222');
         });
 
         APP.UI.addListener(
@@ -2190,8 +2178,14 @@ export default {
      * @private
      */
     _initDeviceList() {
+        console.log("INIT XXXXXXXXX DEVICES");
+
         JitsiMeetJS.mediaDevices.isDeviceListAvailable()
             .then(isDeviceListAvailable => {
+                console.log("YYYYYYY");
+                console.log(isDeviceListAvailable);
+                console.log(JitsiMeetJS.mediaDevices.isDeviceChangeAvailable());
+
                 if (isDeviceListAvailable
                         && JitsiMeetJS.mediaDevices.isDeviceChangeAvailable()) {
                     JitsiMeetJS.mediaDevices.enumerateDevices(devices => {
@@ -2209,9 +2203,12 @@ export default {
                                 localVideo.getDeviceId(), false);
                         }
 
+                        console.log("XXXXXXXXX DEVICES");
+                        console.log(devices);
+
                         mediaDeviceHelper.setCurrentMediaDevices(devices);
-                        APP.UI.onAvailableDevicesChanged(devices);
                         APP.store.dispatch(updateDeviceList(devices));
+                        APP.UI.onAvailableDevicesChanged(devices);
                     });
 
                     this.deviceChangeListener = (devices) =>
@@ -2292,6 +2289,7 @@ export default {
         return Promise.all(promises)
             .then(() => {
                 mediaDeviceHelper.setCurrentMediaDevices(devices);
+                APP.store.dispatch(updateDeviceList(devices));
                 APP.UI.onAvailableDevicesChanged(devices);
             });
     },
@@ -2309,7 +2307,7 @@ export default {
         // audio devices detected or if the local audio stream already exists.
         const available = audioDeviceCount > 0 || Boolean(localAudio);
 
-        logger.debug(
+        logger.info(
             'Microphone button enabled: ' + available,
             'local audio: ' + localAudio,
             'audio devices: ' + audioMediaDevices,
@@ -2333,7 +2331,7 @@ export default {
         // config).
         const available = videoDeviceCount > 0 || Boolean(localVideo);
 
-        logger.debug(
+        logger.info(
             'Camera button enabled: ' + available,
             'local video: ' + localVideo,
             'video devices: ' + videoMediaDevices,
