@@ -14,6 +14,7 @@ import messageHandler from "./util/MessageHandler";
 import UIUtil from "./util/UIUtil";
 import UIEvents from "../../service/UI/UIEvents";
 import EtherpadManager from './etherpad/Etherpad';
+import SharedUrlManager from './shared_url/SharedUrl';
 import SharedVideoManager from './shared_video/SharedVideo';
 import Recording from "./recording/Recording";
 
@@ -36,6 +37,7 @@ import {
     setToolbarButton,
     showDialPadButton,
     showEtherpadButton,
+    showSharedUrlButton,
     showSharedVideoButton,
     showDialOutButton,
     showToolbox
@@ -53,6 +55,7 @@ var eventEmitter = new EventEmitter();
 UI.eventEmitter = eventEmitter;
 
 let etherpadManager;
+let sharedUrlManager;
 let sharedVideoManager;
 
 let followMeHandler;
@@ -241,6 +244,29 @@ UI.mucJoined = function () {
  * Handler for toggling filmstrip
  */
 UI.handleToggleFilmstrip = () => UI.toggleFilmstrip();
+
+/**
+ * Setup and show a shared URL.
+ * @param {string} url - URL to be shared.
+ */
+UI.initSharedUrl = url => {
+    if (sharedUrlManager || !url) {
+        return;
+    }
+    logger.log('Shared URL is enabled');
+    sharedUrlManager
+        = new SharedUrlManager(url, eventEmitter);
+
+    APP.store.dispatch(showSharedUrlButton());
+};
+
+/**
+ * Returns the shared URL manager object.
+ * @return {SharedUrlManager} the shared URL manager object.
+ */
+UI.getSharedUrlManager = function () {
+    return sharedUrlManager;
+};
 
 /**
  * Returns the shared document manager object.
@@ -1219,6 +1245,9 @@ const UIListeners = new Map([
     [
         UIEvents.ETHERPAD_CLICKED,
         () => etherpadManager && etherpadManager.toggleEtherpad()
+    ], [
+        UIEvents.SHARED_URL_CLICKED,
+        () => sharedUrlManager && sharedUrlManager.toggleSharedUrl()
     ], [
         UIEvents.SHARED_VIDEO_CLICKED,
         () => sharedVideoManager && sharedVideoManager.toggleSharedVideo()

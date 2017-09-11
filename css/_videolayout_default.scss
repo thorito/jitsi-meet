@@ -223,6 +223,7 @@
     object-fit: cover;
 }
 
+#sharedUrl,
 #sharedVideo,
 #etherpad,
 #localVideoWrapper video,
@@ -245,7 +246,8 @@
     text-align: center;
 }
 
-#etherpad {
+#etherpad,
+#sharedUrl{
     z-index: $zindex0;
 }
 

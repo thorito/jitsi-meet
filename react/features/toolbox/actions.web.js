@@ -339,6 +339,24 @@ export function showRecordingButton(): Function {
  *
  * @returns {Function}
  */
+export function showSharedUrlButton(): Function {
+    return (dispatch: Dispatch<*>) => {
+        const buttonName = 'sharedurl';
+
+        if (isButtonEnabled(buttonName)
+            && !config.disableThirdPartyRequests) {
+            dispatch(setToolbarButton(buttonName, {
+                hidden: false
+            }));
+        }
+    };
+}
+
+/**
+ * Shows or hides the 'shared video' button.
+ *
+ * @returns {Function}
+ */
 export function showSharedVideoButton(): Function {
     return (dispatch: Dispatch<*>) => {
         const buttonName = 'sharedvideo';

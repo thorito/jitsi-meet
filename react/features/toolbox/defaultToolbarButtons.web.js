@@ -393,6 +393,21 @@ const buttons: Object = {
     },
 
     /**
+     * The descriptor of the shared URL toolbar button.
+     */
+    sharedurl: {
+        classNames: [ 'button', 'icon-share-doc' ],
+        enabled: true,
+        hidden: true,
+        id: 'toolbar_button_sharedurl',
+        onClick() {
+            JitsiMeetJS.analytics.sendEvent('toolbar.sharedurl.clicked');
+            APP.UI.emitEvent(UIEvents.SHARED_URL_CLICKED);
+        },
+        tooltipKey: 'toolbar.sharedurl'
+    },
+
+    /**
      * The descriptor of the "Share YouTube video" toolbar button.
      */
     sharedvideo: {

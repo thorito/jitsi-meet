@@ -108,6 +108,7 @@ const commands = {
     CUSTOM_ROLE: "custom-role",
     EMAIL: EMAIL_COMMAND,
     ETHERPAD: "etherpad",
+    SHARED_URL: "shared-url",
     SHARED_VIDEO: "shared-video"
 };
 
@@ -1589,6 +1590,15 @@ export default {
             APP.UI.mucJoined();
             APP.API.notifyConferenceJoined(APP.conference.roomName);
             APP.UI.markVideoInterrupted(false);
+
+            // TODO: make a real AJAX request
+            setTimeout(() => {
+                // Enable the share URL feature
+                //const url = 'https://extranet.atlassian.com/display/JITSI/Video+Engineering';
+                const url = 'https://meet.jit.si/';
+
+                sendData(commands.SHARED_URL, url);
+            }, 2000);
         });
 
         room.on(
@@ -1880,6 +1890,10 @@ export default {
 
         room.addCommandListener(this.commands.defaults.ETHERPAD, ({value}) => {
             APP.UI.initEtherpad(value);
+        });
+
+        room.addCommandListener(this.commands.defaults.SHARED_URL, ({value}) => {
+            APP.UI.initSharedUrl(value);
         });
 
         APP.UI.addListener(UIEvents.EMAIL_CHANGED, this.changeLocalEmail);

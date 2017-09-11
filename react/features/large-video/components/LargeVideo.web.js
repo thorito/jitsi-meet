@@ -26,6 +26,7 @@ export default class LargeVideo extends Component {
             <div
                 className = 'videocontainer'
                 id = 'largeVideoContainer'>
+                <div id = 'sharedUrl' />
                 <div id = 'sharedVideo'>
                     <div id = 'sharedVideoIFrame' />
                 </div>
