@@ -16,6 +16,7 @@
 
 package org.jitsi.meet;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -102,4 +103,21 @@ public class MainActivity extends JitsiMeetActivity {
 
         super.onCreate(savedInstanceState);
     }
+
+    @Override
+    public void onUserLeaveHint () {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            enterPictureInPictureMode();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (!isInPictureInPictureMode()) {
+                super.onPause();
+            }
+        }
+    }
+
 }
