@@ -208,8 +208,8 @@ public class JitsiMeetActivity
     protected void onPause() {
         super.onPause();
 
-        JitsiMeetView.onHostPause(this);
-        defaultBackButtonImpl = null;
+        //JitsiMeetView.onHostPause(this);
+        //defaultBackButtonImpl = null;
     }
 
     @Override

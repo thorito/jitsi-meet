@@ -111,13 +111,4 @@ public class MainActivity extends JitsiMeetActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (!isInPictureInPictureMode()) {
-                super.onPause();
-            }
-        }
-    }
-
 }
