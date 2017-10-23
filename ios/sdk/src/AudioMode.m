@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-#import "RCTBridgeModule.h"
-#import "RCTLog.h"
+#import <React/RCTBridge.h>
+#import <React/RCTEventEmitter.h>
+#import <React/RCTLog.h>
 
 #import <AVFoundation/AVFoundation.h>
 
-@interface AudioMode : NSObject<RCTBridgeModule>
+@interface AudioMode : RCTEventEmitter
 @end
 
 @implementation AudioMode {
@@ -48,8 +49,19 @@ typedef enum {
     if (self) {
         _category = nil;
         _mode = nil;
+
+        // Add listener for audio route changes
+        [[NSNotificationCenter defaultCenter]
+             addObserver:self
+                selector:@selector(routeChanged:)
+                    name:AVAudioSessionRouteChangeNotification
+                  object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (dispatch_queue_t)methodQueue {
@@ -67,9 +79,12 @@ typedef enum {
 
     switch (reason) {
     case AVAudioSessionRouteChangeReasonCategoryChange:
-        // The category has changed. Check if it's the one we want and adjust as
-        // needed.
-        [self setCategory:_category mode:_mode error:nil];
+        // AVAudioSession is a singleton and other parts of the application such as
+        // WebRTC may undo the settings. Make sure that the settings are reapplied
+        // upon undoes.
+        if (_category || _mode) {
+            [self setCategory:_category mode:_mode error:nil];
+        }
         break;
 
     default:
@@ -125,18 +140,6 @@ RCT_EXPORT_METHOD(setMode:(int)mode
     if (![self setCategory:avCategory mode:avMode error:&error] || error) {
         reject(@"setMode", error.localizedDescription, error);
         return;
-    }
-
-    // Even though the specified category and mode were successfully set, the
-    // AVAudioSession is a singleton and other parts of the application such as
-    // WebRTC may undo the settings. Make sure that the settings are reapplied
-    // upon undoes.
-    if (!_category || !_mode) {
-        [[NSNotificationCenter defaultCenter]
-            addObserver:self
-               selector:@selector(routeChanged:)
-                   name:AVAudioSessionRouteChangeNotification
-                 object:nil];
     }
 
     // Save the desired/specified category and mode so that they may be
