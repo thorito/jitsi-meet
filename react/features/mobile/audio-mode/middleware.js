@@ -1,8 +1,6 @@
 /* @flow */
 
-import { NativeModules } from 'react-native';
-
-import { APP_WILL_MOUNT } from '../../app';
+import { APP_WILL_MOUNT, APP_WILL_UNMOUNT } from '../../app';
 import {
     CONFERENCE_FAILED,
     CONFERENCE_LEFT,
@@ -10,6 +8,9 @@ import {
     SET_AUDIO_ONLY
 } from '../../base/conference';
 import { MiddlewareRegistry } from '../../base/redux';
+
+import { _SET_AUDIOMODE_SUBSCRIPTIONS } from './actionTypes';
+import AudioMode from './AudioMode';
 
 /**
  * Middleware that captures conference actions and sets the correct audio mode
@@ -19,14 +20,25 @@ import { MiddlewareRegistry } from '../../base/redux';
  * @param {Store} store - The redux store.
  * @returns {Function}
  */
-MiddlewareRegistry.register(({ getState }) => next => action => {
-    const AudioMode = NativeModules.AudioMode;
-
+MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
     if (AudioMode) {
         let mode;
 
         switch (action.type) {
-        case APP_WILL_MOUNT:
+        case APP_WILL_MOUNT: {
+            AudioMode.addListener('AudioRouteChanged', () => {
+                console.log("XXXXX - AUDIO ROUTE CHANGED!");
+            });
+            break;
+        }
+
+        case APP_WILL_UNMOUNT:
+            dispatch({
+                type: _SET_AUDIOMODE_SUBSCRIPTIONS,
+                subscriptions: undefined
+            });
+            break;
+
         case CONFERENCE_FAILED:
         case CONFERENCE_LEFT:
             mode = AudioMode.DEFAULT;
@@ -43,6 +55,9 @@ MiddlewareRegistry.register(({ getState }) => next => action => {
             }
             break;
         }
+
+        case _SET_AUDIOMODE_SUBSCRIPTIONS:
+            break;
         }
 
         if (typeof mode !== 'undefined') {

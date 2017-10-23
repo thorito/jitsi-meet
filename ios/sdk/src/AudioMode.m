@@ -91,6 +91,9 @@ typedef enum {
         // Do nothing.
         break;
     }
+
+    // Send an event about the route change
+    [self sendEventWithName:@"AudioRouteChanged" body:nil];
 }
 
 - (BOOL)setCategory:(NSString *)category
@@ -110,6 +113,10 @@ typedef enum {
     }
 
     return YES;
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"AudioRouteChanged"];
 }
 
 RCT_EXPORT_METHOD(setMode:(int)mode
