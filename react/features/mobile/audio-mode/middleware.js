@@ -26,8 +26,9 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
 
         switch (action.type) {
         case APP_WILL_MOUNT: {
-            AudioMode.addListener('AudioRouteChanged', () => {
+            AudioMode.addListener('AudioRouteChanged', data => {
                 console.log("XXXXX - AUDIO ROUTE CHANGED!");
+                console.log(data);
             });
             break;
         }

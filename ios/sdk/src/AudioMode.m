@@ -20,6 +20,12 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+NSString *const kHeadphones      = @"headphones";
+NSString *const kBluetooth       = @"bluetooth";
+NSString *const kEarpiece        = @"earpiece";
+NSString *const kSpeaker         = @"speaker";
+NSString *const kOther           = @"other";
+
 @interface AudioMode : RCTEventEmitter
 @end
 
@@ -71,6 +77,45 @@ typedef enum {
     return dispatch_get_main_queue();
 }
 
+- (NSString *)convertPortName:(AVAudioSessionPortDescription *)port {
+    NSString *portType = [port portType];
+    if ([portType isEqualToString:AVAudioSessionPortHeadphones]) {
+        return kHeadphones;
+    } else if ([portType isEqualToString:AVAudioSessionPortBluetoothA2DP]) {
+        return kBluetooth;
+    } else if ([portType isEqualToString:AVAudioSessionPortBluetoothHFP]) {
+        return kBluetooth;
+    } else if ([portType isEqualToString:AVAudioSessionPortBluetoothLE]) {
+        return kBluetooth;
+    } else if ([portType isEqualToString:AVAudioSessionPortBuiltInReceiver]) {
+        return kEarpiece;
+    } else if ([portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
+        return kSpeaker;
+    } else {
+        return kOther;
+    }
+}
+
+- (NSString *)currentRoute {
+    AVAudioSessionRouteDescription *currentRoute
+        = [[AVAudioSession sharedInstance] currentRoute];
+
+    return [self convertPortName:[[currentRoute outputs] objectAtIndex:0]];
+}
+
+- (NSArray<NSString *> *)availableRoutes {
+    NSMutableSet *routes = [NSMutableSet set];
+    AVAudioSessionRouteDescription *currentRoute
+        = [[AVAudioSession sharedInstance] currentRoute];
+
+    for (AVAudioSessionPortDescription *desc in [currentRoute inputs]) {
+        NSLog(@"PORT: type %@, name %@", [desc portType], [desc portName]);
+        [routes addObject:[self convertPortName:desc]];
+    }
+
+    return [routes allObjects];
+}
+
 - (void)routeChanged:(NSNotification*)notification {
     NSInteger reason
         = [[notification.userInfo
@@ -92,8 +137,12 @@ typedef enum {
         break;
     }
 
-    // Send an event about the route change
-    [self sendEventWithName:@"AudioRouteChanged" body:nil];
+    // Notify JS abut the route change.
+    NSDictionary *data = @{
+       @"currentRoute": [self currentRoute],
+       @"availableRoutes": [self availableRoutes]
+    };
+    [self sendEventWithName:@"AudioRouteChanged" body:data];
 }
 
 - (BOOL)setCategory:(NSString *)category
@@ -117,6 +166,23 @@ typedef enum {
 
 - (NSArray<NSString *> *)supportedEvents {
     return @[@"AudioRouteChanged"];
+}
+
+RCT_EXPORT_METHOD(forceSpeaker:(int)force
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject) {
+    NSError* error;
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    AVAudioSessionPortOverride portOverride
+        = force ? AVAudioSessionPortOverrideSpeaker
+                : AVAudioSessionPortOverrideNone;
+
+    if (![session overrideOutputAudioPort:portOverride error:&error] || error) {
+        reject(@"forceSpeaker", error.localizedDescription, error);
+        return;
+    }
+
+    resolve(nil);
 }
 
 RCT_EXPORT_METHOD(setMode:(int)mode
