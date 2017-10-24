@@ -21,7 +21,9 @@ import {
     abstractMapDispatchToProps,
     abstractMapStateToProps
 } from '../functions';
+
 import styles from './styles';
+import AudioRouteButton from './AudioRouteButton';
 import ToolbarButton from './ToolbarButton';
 
 /**
@@ -302,6 +304,11 @@ class Toolbox extends Component {
                             style = { style }
                             underlayColor = { underlayColor } />
                 }
+                <AudioRouteButton
+                    iconName = { 'volume' }
+                    iconStyle = { iconStyle }
+                    style = { style }
+                    underlayColor = { underlayColor } />
             </View>
         );
 
