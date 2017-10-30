@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AppRegistry, Linking } from 'react-native';
 
+console.disableYellowBox = true;
+
 import { App } from './features/app';
 import { equals } from './features/base/redux';
 

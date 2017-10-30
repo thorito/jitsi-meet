@@ -57,17 +57,21 @@ class ActionSheet extends Component {
     constructor (props) {
         super(props)
         this.scrollEnabled = false
-        this.translateY = this._calculateHeight(props)
+        //this.translateY = this._calculateHeight(props)
+        //this.height = Dimensions.get('window').height * 0.9;
+        this.height = 0;
         this.state = {
             visible: false,
-            sheetAnim: new Animated.Value(this.translateY)
+            sheetAnim: new Animated.Value()
         }
         this._cancel = this._cancel.bind(this)
+
+        this._onLayout = this._onLayout.bind(this);
     }
 
-    componentWillReceiveProps (nextProps) {
-        this.translateY = this._calculateHeight(nextProps)
-    }
+    //componentWillReceiveProps (nextProps) {
+    //    this.translateY = this._calculateHeight(nextProps)
+    //}
 
     show () {
         this.setState({visible: true})
@@ -88,13 +92,13 @@ class ActionSheet extends Component {
     _showSheet () {
         Animated.timing(this.state.sheetAnim, {
             toValue: 0,
-            duration: 250
+            duration: 500
         }).start()
     }
 
     _hideSheet (callback) {
         Animated.timing(this.state.sheetAnim, {
-            toValue: this.translateY,
+            toValue: this.height,
             duration: 150
         }).start(callback)
     }
@@ -108,6 +112,22 @@ class ActionSheet extends Component {
         } else {
             this.scrollEnabled = false
             return height
+        }
+    }
+
+    _onLayout(event) {
+        console.log('XXX ON LAYOUT');
+        console.log(event.nativeEvent.layout);
+
+        const { height } = event.nativeEvent.layout;
+        const maxHeight = Dimensions.get('window').height * 0.9;
+        const newHeight = Math.min(height, maxHeight);
+
+        if (this.height !== newHeight) {
+            //return;
+            console.log('AAAAAAA');
+            this.height = newHeight;
+            this.state.sheetAnim.setValue(this.height);
         }
     }
 
@@ -150,9 +170,10 @@ class ActionSheet extends Component {
                 <View style={sheetStyle.wrapper}>
                     <Text style={styles.overlay} onPress={this._cancel}></Text>
                     <Animated.View
-                        style={[sheetStyle.bd, {height: this.translateY, transform: [{translateY: sheetAnim}]}]}
+                        style={[sheetStyle.bd, {transform: [{translateY: sheetAnim}]} ]}
                     >
                         <ScrollView
+                            onLayout = { this._onLayout }
                             scrollEnabled={this.scrollEnabled}
                             contentContainerStyle={sheetStyle.options}>
                             {this._renderOptions()}
