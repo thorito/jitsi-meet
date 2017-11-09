@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { translate } from '../../base/i18n';
 
-import AbstractPageReloadOverlay from './AbstractPageReloadOverlay';
+import PageReloadOverlayBase from './PageReloadOverlayBase';
 import OverlayFrame from './OverlayFrame';
 
 /**
@@ -11,7 +11,7 @@ import OverlayFrame from './OverlayFrame';
  * conference is reloaded. Shows a warning message and counts down towards the
  * reload.
  */
-class PageReloadOverlay extends AbstractPageReloadOverlay {
+class PageReloadOverlay extends PageReloadOverlayBase {
     /**
      * Implements React's {@link Component#render()}.
      *

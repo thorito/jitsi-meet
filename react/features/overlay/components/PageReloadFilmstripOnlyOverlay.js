@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { translate } from '../../base/i18n';
 
-import AbstractPageReloadOverlay from './AbstractPageReloadOverlay';
+import PageReloadOverlayBase from './PageReloadOverlayBase';
 import FilmstripOnlyOverlayFrame from './FilmstripOnlyOverlayFrame';
 
 /**
@@ -11,7 +11,7 @@ import FilmstripOnlyOverlayFrame from './FilmstripOnlyOverlayFrame';
  * mode. Shown before the conference is reloaded. Shows a warning message and
  * counts down towards the reload.
  */
-class PageReloadFilmstripOnlyOverlay extends AbstractPageReloadOverlay {
+class PageReloadFilmstripOnlyOverlay extends PageReloadOverlayBase {
     /**
      * Implements React's {@link Component#render()}.
      *

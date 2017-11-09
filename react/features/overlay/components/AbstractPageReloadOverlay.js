@@ -1,17 +1,12 @@
-/* @flow */
+// @flow
 
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import { randomInt } from '../../base/util';
 
 import { _reloadNow } from '../actions';
-import ReloadButton from './ReloadButton';
 
-declare var AJS: Object;
-declare var APP: Object;
-
-const logger = require('jitsi-meet-logger').getLogger(__filename);
 
 /**
  * Implements abstract React Component for the page reload overlays.
@@ -52,7 +47,7 @@ export default class AbstractPageReloadOverlay extends Component<*, *> {
         t: PropTypes.func
     };
 
-    _interval: ?number
+    _interval: ?number;
 
     state: {
 
@@ -84,7 +79,7 @@ export default class AbstractPageReloadOverlay extends Component<*, *> {
          * @type {string}
          */
         title: string
-    }
+    };
 
     /**
      * Initializes a new AbstractPageReloadOverlay instance.
@@ -129,20 +124,6 @@ export default class AbstractPageReloadOverlay extends Component<*, *> {
      * @returns {void}
      */
     componentDidMount() {
-        // FIXME (CallStats - issue) This event will not make it to CallStats
-        // because the log queue is not flushed before "fabric terminated" is
-        // sent to the backed.
-        // FIXME: We should dispatch action for this.
-        APP.conference.logEvent(
-            'page.reload',
-            /* value */ undefined,
-            /* label */ this.props.reason);
-        logger.info(
-            `The conference will be reloaded after ${
-                this.state.timeoutSeconds} seconds.`);
-
-        AJS.progressBars.update('#reloadProgressBar', 0);
-
         this._interval
             = setInterval(
                 () => {
@@ -165,20 +146,6 @@ export default class AbstractPageReloadOverlay extends Component<*, *> {
     }
 
     /**
-     * React Component method that executes once component is updated.
-     *
-     * @inheritdoc
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        const { timeLeft, timeoutSeconds } = this.state;
-
-        AJS.progressBars.update(
-            '#reloadProgressBar',
-            (timeoutSeconds - timeLeft) / timeoutSeconds);
-    }
-
-    /**
      * Clears the timer interval.
      *
      * @inheritdoc
@@ -192,18 +159,12 @@ export default class AbstractPageReloadOverlay extends Component<*, *> {
     }
 
     /**
-     * Renders the button for relaod the page if necessary.
+     * Renders the button for reloading the page if necessary.
      *
      * @protected
      * @returns {ReactElement|null}
      */
     _renderButton() {
-        if (this.props.isNetworkFailure) {
-            return (
-                <ReloadButton textKey = 'dialog.rejoinNow' />
-            );
-        }
-
         return null;
     }
 
@@ -214,12 +175,6 @@ export default class AbstractPageReloadOverlay extends Component<*, *> {
      * @returns {ReactElement}
      */
     _renderProgressBar() {
-        return (
-            <div
-                className = 'aui-progress-indicator'
-                id = 'reloadProgressBar'>
-                <span className = 'aui-progress-indicator-value' />
-            </div>
-        );
+        return null;
     }
 }
