@@ -67,7 +67,7 @@ export default class AbstractPageReloadOverlay extends Component<*, *> {
      * @returns {boolean} - If this overlay needs to be rendered, {@code true};
      * {@code false}, otherwise.
      */
-    static needsRender(state) {
+    static needsRender(state: Object) {
         const conferenceError = state['features/base/conference'].error;
         const configError = state['features/base/config'].error;
         const connectionError = state['features/base/connection'].error;
