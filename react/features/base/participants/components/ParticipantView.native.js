@@ -210,7 +210,12 @@ class ParticipantView extends Component {
                     ...this.props.style
                 }}>
 
-                { renderVideo
+                <VideoTrack
+                    videoTrack = { renderVideo && _toBoolean(this.props.showVideo, true) ? videoTrack : null }
+                    waitForVideoStarted = { waitForVideoStarted }
+                    zOrder = { this.props.zOrder } />
+
+                { false && renderVideo
 
                     // The consumer of this ParticipantView is allowed to forbid
                     // showing the video if the private logic of this
