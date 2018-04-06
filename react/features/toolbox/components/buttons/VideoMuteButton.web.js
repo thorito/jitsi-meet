@@ -1,10 +1,8 @@
 // @flow
 
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import UIEvents from '../../../../../service/UI/UIEvents';
 import {
     ACTION_SHORTCUT_TRIGGERED,
     VIDEO_MUTE,
@@ -16,56 +14,39 @@ import { MEDIA_TYPE } from '../../../base/media';
 import { isLocalTrackMuted } from '../../../base/tracks';
 
 import AbstractVideoMuteButton from './AbstractVideoMuteButton';
-import ToolbarButton from '../ToolbarButton';
+import ToolboxItem from '../ToolboxItem';
 
 declare var APP: Object;
+
+import type {
+    Props as AbstractVideoMuteButtonProps } from './AbstractVideoMuteButton';
+
+type Props = AbstractVideoMuteButtonProps & {
+
+    /**
+     * The {@code JitsiConference} for the current conference.
+     */
+    _conference: Object,
+
+    /**
+     * Invoked to obtain translated strings.
+     */
+    t: Function
+};
 
 /**
  * Component that renders a toolbar button for toggling video mute.
  *
  * @extends AbstractVideoMuteButton
  */
-export class VideoMuteButton extends AbstractVideoMuteButton {
-    /**
-     * Default values for {@code VideoMuteButton} component's properties.
-     *
-     * @static
-     */
-    static defaultProps = {
-        tooltipPosition: 'top'
-    };
-
-    /**
-     * {@code VideoMuteButton} component's property types.
-     *
-     * @static
-     */
-    static propTypes = {
-        ...AbstractVideoMuteButton.propTypes,
-
-        /**
-         * The {@code JitsiConference} for the current conference.
-         */
-        _conference: PropTypes.object,
-
-        /**
-         * Invoked to obtain translated strings.
-         */
-        t: PropTypes.func,
-
-        /**
-         * Where the tooltip should display, relative to the button.
-         */
-        tooltipPosition: PropTypes.string
-    };
-
+class VideoMuteButton extends AbstractVideoMuteButton<Props> {
     /**
      * Initializes a new {@code VideoMuteButton} instance.
      *
      * @param {Props} props - The read-only React {@code Component} props with
      * which the new instance is to be initialized.
      */
-    constructor(props: Object) {
+    constructor(props: Props) {
         super(props);
 
         // Bind event handlers so they are only bound once per instance.
@@ -106,7 +87,7 @@ export class VideoMuteButton extends AbstractVideoMuteButton {
         const { _conference, _videoMuted, t, tooltipPosition } = this.props;
 
         return (
-            <ToolbarButton
+            <ToolboxItem
                 accessibilityLabel = 'Video mute'
                 iconName = { _videoMuted && _conference
                     ? 'icon-camera-disabled toggled'
@@ -115,18 +96,6 @@ export class VideoMuteButton extends AbstractVideoMuteButton {
                 tooltip = { t('toolbar.videomute') }
                 tooltipPosition = { tooltipPosition } />
         );
-    }
-
-    _doToggleVideo: () => void;
-
-    /**
-     * Emits an event to signal video mute should be toggled.
-     *
-     * @private
-     * @returns {void}
-     */
-    _doToggleVideo() {
-        APP.UI.emitEvent(UIEvents.VIDEO_MUTED, !this.props._videoMuted);
     }
 
     _onShortcutToggleVideo: () => void;
@@ -146,8 +115,6 @@ export class VideoMuteButton extends AbstractVideoMuteButton {
 
         this._doToggleVideo();
     }
-
-    _onToolbarToggleVideo: () => void;
 }
 
 /**

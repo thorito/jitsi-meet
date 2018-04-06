@@ -1039,7 +1039,9 @@ class Toolbox extends Component<Props, State> {
                     icon = 'icon-open_in_new'
                     key = 'shortcuts'
                     onClick = { this._onToolbarOpenKeyboardShortcuts }
-                    text = { t('toolbar.shortcuts') } />
+                    text = { t('toolbar.shortcuts') } />,
+            this._shouldShowButton('camera')
+                && <VideoMuteButton showLabel = { true } />
         ];
     }
 
