@@ -60,11 +60,13 @@ class VideoMuteButton extends AbstractVideoMuteButton<Props> {
      * @returns {void}
      */
     componentDidMount() {
+        /*
         APP.keyboardshortcut.registerShortcut(
             'V',
             null,
             this._onShortcutToggleVideo,
             'keyboardShortcuts.videoMute');
+            */
     }
 
     /**
@@ -74,7 +76,7 @@ class VideoMuteButton extends AbstractVideoMuteButton<Props> {
      * @returns {void}
      */
     componentWillUnmount() {
-        APP.keyboardshortcut.unregisterShortcut('V');
+        //APP.keyboardshortcut.unregisterShortcut('V');
     }
 
     /**
@@ -84,7 +86,13 @@ class VideoMuteButton extends AbstractVideoMuteButton<Props> {
      * @returns {ReactElement}
      */
     render() {
-        const { _conference, _videoMuted, t, tooltipPosition } = this.props;
+        const {
+            _conference,
+            _videoMuted,
+            showLabel,
+            t,
+            tooltipPosition
+        } = this.props;
 
         return (
             <ToolboxItem
@@ -92,7 +100,9 @@ class VideoMuteButton extends AbstractVideoMuteButton<Props> {
                 iconName = { _videoMuted && _conference
                     ? 'icon-camera-disabled toggled'
                     : 'icon-camera' }
+                label = { t('toolbar.videomute') }
                 onClick = { this._onToolbarToggleVideo }
+                showLabel = { showLabel }
                 tooltip = { t('toolbar.videomute') }
                 tooltipPosition = { tooltipPosition } />
         );

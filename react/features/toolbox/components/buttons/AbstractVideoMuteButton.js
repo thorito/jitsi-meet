@@ -21,6 +21,8 @@ export type Props = {
      */
     _videoMuted: boolean,
 
+    showLabel: boolean,
+
     /**
      * Invoked to toggle video mute.
      */
