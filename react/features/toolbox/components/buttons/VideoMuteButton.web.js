@@ -24,11 +24,6 @@ import type {
 type Props = AbstractVideoMuteButtonProps & {
 
     /**
-     * The {@code JitsiConference} for the current conference.
-     */
-    _conference: Object,
-
-    /**
      * Invoked to obtain translated strings.
      */
     t: Function
@@ -87,7 +82,6 @@ class VideoMuteButton extends AbstractVideoMuteButton<Props> {
      */
     render() {
         const {
-            _conference,
             _videoMuted,
             showLabel,
             t,
@@ -97,7 +91,7 @@ class VideoMuteButton extends AbstractVideoMuteButton<Props> {
         return (
             <ToolboxItem
                 accessibilityLabel = 'Video mute'
-                iconName = { _videoMuted && _conference
+                iconName = { _videoMuted
                     ? 'icon-camera-disabled toggled'
                     : 'icon-camera' }
                 label = { t('toolbar.videomute') }
@@ -134,7 +128,6 @@ class VideoMuteButton extends AbstractVideoMuteButton<Props> {
  * @param {Object} state - The Redux state.
  * @private
  * @returns {{
- *     _conference: Object,
  *     _videoMuted: boolean,
  * }}
  */
@@ -142,7 +135,6 @@ function _mapStateToProps(state) {
     const tracks = state['features/base/tracks'];
 
     return {
-        _conference: state['features/base/conference'].conference,
         _videoMuted: isLocalTrackMuted(tracks, MEDIA_TYPE.VIDEO)
     };
 }

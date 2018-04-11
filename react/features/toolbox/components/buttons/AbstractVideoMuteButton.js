@@ -1,87 +1,70 @@
 // @flow
 
-import { Component } from 'react';
+import React, { Component } from 'react';
 
-import type { Dispatch } from 'redux';
-
-import {
-    VIDEO_MUTE,
-    createToolbarEvent,
-    sendAnalytics
-} from '../../../analytics';
-import {
-    VIDEO_MUTISM_AUTHORITY,
-    setVideoMuted
-} from '../../../base/media';
+import ToolboxItem from '../ToolboxItem';
 
 export type Props = {
 
-    /**
-     * Whether or not the local camera is muted.
-     */
-    _videoMuted: boolean,
-
     showLabel: boolean,
 
-    /**
-     * Invoked to toggle video mute.
-     */
-    dispatch: Dispatch<*>
+    label: string,
+
+    tooltip: string,
+
+    tooltipPosition: string,
+
+    t: Function
 };
 
 /**
  * An abstract implementation of a button for toggling video mute.
  */
 export default class AbstractVideoMuteButton extends Component<Props> {
-    /**
-     * Initializes a new {@code AbstractVideoMuteButton} instance.
-     *
-     * @param {Props} props - The read-only React {@code Component} props with
-     * which the new instance is to be initialized.
-     */
     constructor(props: Props) {
         super(props);
 
-        // Bind event handler so it is only bound once per instance.
-        this._onToolbarToggleVideo = this._onToolbarToggleVideo.bind(this);
+        this._onClick = this._onClick.bind(this);
+    }
+
+    _onClick() {
+        this._setVideoMuted(!this._isVideoMuted());
+    }
+
+    _isVideoMuted() {
+        // Nothing.
+    }
+
+    _setVideoMuted(videoMuted: boolean) {
+        // Nothing.
     }
 
     /**
-     * Dispatches an action to toggle the mute state of the video/camera.
+     * Implements React's {@link Component#render()}.
      *
-     * @private
-     * @returns {void}
+     * @inheritdoc
+     * @returns {ReactElement}
      */
-    _doToggleVideo() {
-        // The user sees the reality i.e. the state of base/tracks and intends
-        // to change reality by tapping on the respective button i.e. the user
-        // sets the state of base/media. Whether the user's intention will turn
-        // into reality is a whole different story which is of no concern to the
-        // tapping.
-        this.props.dispatch(
-            setVideoMuted(
-                !this.props._videoMuted,
-                VIDEO_MUTISM_AUTHORITY.USER,
-                /* ensureTrack */ true));
-    }
+    render() {
+        const {
+            t,
+            ...props
+        } = this.props;
+        const videoMuted = this._isVideoMuted();
 
+        if (typeof t !== 'undefined') {
+            'label' in props && (props.label = t(props.label));
+            'tooltip' in props && (props.tooltip = t(props.tooltip));
+        }
 
-    _onToolbarToggleVideo: () => void;
-
-    /**
-     * Creates an analytics toolbar event and dispatches an action for toggling
-     * video mute.
-     *
-     * @private
-     * @returns {void}
-     */
-    _onToolbarToggleVideo() {
-        sendAnalytics(createToolbarEvent(
-            VIDEO_MUTE,
-            {
-                enable: !this.props._videoMuted
-            }));
-
-        this._doToggleVideo();
+        return (
+            <ToolboxItem
+                accessibilityLabel = 'Video mute'
+                iconName = { videoMuted
+                    ? 'icon-camera-disabled toggled'
+                    : 'icon-camera' }
+                onClick = { this._onClick }
+                { ...props } />
+        );
     }
 }

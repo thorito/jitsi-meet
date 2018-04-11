@@ -35,7 +35,7 @@ import OverflowMenuButton from './OverflowMenuButton';
 import OverflowMenuItem from './OverflowMenuItem';
 import OverflowMenuProfileItem from './OverflowMenuProfileItem';
 import ToolbarButton from './ToolbarButton';
-import { AudioMuteButton, HangupButton, VideoMuteButton } from './buttons';
+import { AudioMuteButton, HangupButton, StatefulVideoMuteButton, VideoMuteButton } from './buttons';
 
 type Props = {
 
@@ -357,7 +357,7 @@ class Toolbox extends Component<Props, State> {
                     { this._shouldShowButton('hangup')
                         && <HangupButton /> }
                     { this._shouldShowButton('camera')
-                        && <VideoMuteButton /> }
+                        && <StatefulVideoMuteButton /> }
                 </div>
                 <div className = 'button-group-right'>
                     { this._shouldShowButton('invite')
@@ -1041,7 +1041,7 @@ class Toolbox extends Component<Props, State> {
                     onClick = { this._onToolbarOpenKeyboardShortcuts }
                     text = { t('toolbar.shortcuts') } />,
             this._shouldShowButton('camera')
-                && <VideoMuteButton showLabel = { true } />
+                && <StatefulVideoMuteButton showLabel = { true } />
         ];
     }
 
