@@ -22,7 +22,7 @@ export type Props = {
     iconName: string,
 
     /**
-     * The text associated with this item. When `displayLabel` is set to
+     * The text associated with this item. When `showLabel` is set to
      * {@code true}, it will be displayed alongside the icon.
      */
     label: string,

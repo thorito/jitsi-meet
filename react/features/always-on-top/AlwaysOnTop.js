@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import StatelessToolbar from '../toolbox/components/StatelessToolbar';
 import StatelessToolbarButton
     from '../toolbox/components/StatelessToolbarButton';
+import { VideoMuteButton } from '../toolbox/components/always-on-top';
 
 const { api } = window.alwaysOnTop;
 
@@ -12,18 +13,6 @@ const { api } = window.alwaysOnTop;
  * Map with toolbar button descriptors.
  */
 const TOOLBAR_BUTTONS = {
-    /**
-     * The descriptor of the camera toolbar button.
-     */
-    camera: {
-        classNames: [ 'button', 'icon-camera' ],
-        enabled: true,
-        id: 'toolbar_button_camera',
-        onClick() {
-            api.executeCommand('toggleVideo');
-        }
-    },
-
     /**
      * The descriptor of the toolbar button which hangs up the call/conference.
      */
@@ -64,8 +53,6 @@ type State = {
     avatarURL: string,
     displayName: string,
     isVideoDisplayed: boolean,
-    videoAvailable: boolean,
-    videoMuted: boolean,
     visible: boolean
 };
 
@@ -90,9 +77,7 @@ export default class AlwaysOnTop extends Component<*, State> {
         this.state = {
             visible: true,
             audioMuted: false,
-            videoMuted: false,
             audioAvailable: false,
-            videoAvailable: false,
             displayName: '',
             isVideoDisplayed: true,
             avatarURL: ''
@@ -110,9 +95,6 @@ export default class AlwaysOnTop extends Component<*, State> {
         this._mouseMove = this._mouseMove.bind(this);
         this._onMouseOut = this._onMouseOut.bind(this);
         this._onMouseOver = this._onMouseOver.bind(this);
-        this._videoAvailabilityListener
-            = this._videoAvailabilityListener.bind(this);
-        this._videoMutedListener = this._videoMutedListener.bind(this);
     }
 
     _audioAvailabilityListener: ({ available: boolean }) => void;
@@ -244,8 +226,6 @@ export default class AlwaysOnTop extends Component<*, State> {
         this._hovered = true;
     }
 
-    _videoAvailabilityListener: ({ available: boolean }) => void;
-
     /**
      * Renders display name and avatar for the on stage participant.
      *
@@ -279,28 +259,6 @@ export default class AlwaysOnTop extends Component<*, State> {
     }
 
     /**
-     * Handles audio available api events.
-     *
-     * @param {{ available: boolean }} status - The new available status.
-     * @returns {void}
-     */
-    _videoAvailabilityListener({ available }) {
-        this.setState({ videoAvailable: available });
-    }
-
-    _videoMutedListener: ({ muted: boolean }) => void;
-
-    /**
-     * Handles video muted api events.
-     *
-     * @param {{ muted: boolean }} status - The new muted status.
-     * @returns {void}
-     */
-    _videoMutedListener({ muted }) {
-        this.setState({ videoMuted: muted });
-    }
-
-    /**
      * Sets mouse move listener and initial toolbar timeout.
      *
      * @inheritdoc
@@ -308,9 +266,7 @@ export default class AlwaysOnTop extends Component<*, State> {
      */
     componentDidMount() {
         api.on('audioMuteStatusChanged', this._audioMutedListener);
-        api.on('videoMuteStatusChanged', this._videoMutedListener);
         api.on('audioAvailabilityChanged', this._audioAvailabilityListener);
-        api.on('videoAvailabilityChanged', this._videoAvailabilityListener);
         api.on('largeVideoChanged', this._largeVideoChangedListener);
         api.on('displayNameChange', this._displayNameChangedListener);
         api.on('avatarChanged', this._avatarChangedListener);
@@ -319,21 +275,15 @@ export default class AlwaysOnTop extends Component<*, State> {
 
         Promise.all([
             api.isAudioMuted(),
-            api.isVideoMuted(),
-            api.isAudioAvailable(),
-            api.isVideoAvailable()
+            api.isAudioAvailable()
         ])
         .then(([
             audioMuted = false,
-            videoMuted = false,
-            audioAvailable = false,
-            videoAvailable = false
+            audioAvailable = false
         ]) =>
             this.setState({
                 audioMuted,
-                videoMuted,
-                audioAvailable,
-                videoAvailable
+                audioAvailable
             })
         )
         .catch(console.error);
@@ -352,12 +302,8 @@ export default class AlwaysOnTop extends Component<*, State> {
     componentWillUnmount() {
         api.removeListener('audioMuteStatusChanged',
             this._audioMutedListener);
-        api.removeListener('videoMuteStatusChanged',
-            this._videoMutedListener);
         api.removeListener('audioAvailabilityChanged',
             this._audioAvailabilityListener);
-        api.removeListener('videoAvailabilityChanged',
-            this._videoAvailabilityListener);
         api.removeListener('largeVideoChanged',
             this._largeVideoChangedListener);
         api.removeListener('displayNameChange',
@@ -415,11 +361,6 @@ export default class AlwaysOnTop extends Component<*, State> {
                                     toggled = enabled
                                         ? this.state.audioMuted : true;
                                     break;
-                                case 'camera':
-                                    enabled = this.state.videoAvailable;
-                                    toggled = enabled
-                                        ? this.state.videoMuted : true;
-                                    break;
                                 default: // hangup button
                                     toggled = false;
                                     enabled = true;
@@ -440,6 +381,7 @@ export default class AlwaysOnTop extends Component<*, State> {
                             }
                         )
                     }
+                    <VideoMuteButton key = { 'video-mute' } />
                 </StatelessToolbar>
                 {
                     this._renderVideoNotAvailableScreen()

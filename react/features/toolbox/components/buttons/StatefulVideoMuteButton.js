@@ -22,18 +22,16 @@ import {
  * @extends AbstractVideoMuteButton
  */
 class StatefulVideoMuteButton extends AbstractVideoMuteButton {
-    static defaultProps = {
-        label: 'toolbar.videomute',
-        tooltip: 'toolbar.videomute'
-    };
+
+    _isDisabled() {
+        return this.props._audioOnly;
+    }
 
     _isVideoMuted() {
         return this.props._videoMuted;
     }
 
     _setVideoMuted(videoMuted: boolean) {
-        console.log('XXXXXX');
-        console.log(videoMuted);
         sendAnalytics(createToolbarEvent(VIDEO_MUTE, { enable: videoMuted }));
         this.props.dispatch(
             setVideoMuted(
@@ -51,16 +49,35 @@ class StatefulVideoMuteButton extends AbstractVideoMuteButton {
  * @param {Object} state - The Redux state.
  * @private
  * @returns {{
- *     _videoMuted: boolean,
+ *     _audioOnly: boolean,
+ *     _videoMuted: boolean
  * }}
  */
 function _mapStateToProps(state) {
+    const { audioOnly } = state['features/base/conference'];
     const tracks = state['features/base/tracks'];
 
     return {
+        _audioOnly: Boolean(audioOnly),
         _videoMuted: isLocalTrackMuted(tracks, MEDIA_TYPE.VIDEO)
     };
 }
 
-export default translate(
-    connect(_mapStateToProps)(StatefulVideoMuteButton));
+function _mergeProps(stateProps, dispatchProps, ownProps) {
+    const props = Object.assign({}, ownProps, stateProps, dispatchProps);
+
+    'label' in props && (props.label = props.t(props.label));
+    'tooltip' in props && (props.tooltip = props.t(props.tooltip));
+
+    return props;
+}
+
+StatefulVideoMuteButton = translate(
+    connect(_mapStateToProps, undefined, _mergeProps)(StatefulVideoMuteButton));
+
+StatefulVideoMuteButton.defaultProps = {
+    label: 'toolbar.videomute',
+    tooltip: 'toolbar.videomute'
+};
+
+export default StatefulVideoMuteButton;

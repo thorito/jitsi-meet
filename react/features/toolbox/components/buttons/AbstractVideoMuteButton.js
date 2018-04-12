@@ -5,7 +5,6 @@ import React, { Component } from 'react';
 import ToolboxItem from '../ToolboxItem';
 
 export type Props = {
-
     showLabel: boolean,
 
     label: string,
@@ -14,7 +13,7 @@ export type Props = {
 
     tooltipPosition: string,
 
-    t: Function
+    styles: Object
 };
 
 /**
@@ -29,6 +28,10 @@ export default class AbstractVideoMuteButton extends Component<Props> {
 
     _onClick() {
         this._setVideoMuted(!this._isVideoMuted());
+    }
+
+    _isDisabled() {
+        return false;
     }
 
     _isVideoMuted() {
@@ -46,25 +49,17 @@ export default class AbstractVideoMuteButton extends Component<Props> {
      * @returns {ReactElement}
      */
     render() {
-        const {
-            t,
-            ...props
-        } = this.props;
         const videoMuted = this._isVideoMuted();
-
-        if (typeof t !== 'undefined') {
-            'label' in props && (props.label = t(props.label));
-            'tooltip' in props && (props.tooltip = t(props.tooltip));
-        }
 
         return (
             <ToolboxItem
                 accessibilityLabel = 'Video mute'
+                disabled = { this._isDisabled() }
                 iconName = { videoMuted
                     ? 'icon-camera-disabled toggled'
                     : 'icon-camera' }
                 onClick = { this._onClick }
-                { ...props } />
+                { ...this.props } />
         );
     }
 }
