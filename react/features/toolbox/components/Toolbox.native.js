@@ -29,7 +29,7 @@ import AudioRouteButton from './AudioRouteButton';
 import styles from './styles';
 import ToolbarButton from './ToolbarButton';
 
-import { AudioMuteButton, HangupButton, StatefulVideoMuteButton } from './buttons';
+import { AudioMuteButton, HangupButton, VideoMuteButton } from './buttons';
 
 /**
  * The indicator which determines (at bundle time) whether there should be a
@@ -192,7 +192,7 @@ class Toolbox extends Component<Props> {
                 style = { styles.primaryToolbar }>
                 <AudioMuteButton buttonStyles = { audioButtonStyles } />
                 <HangupButton />
-                <StatefulVideoMuteButton styles = { videoButtonStyles } />
+                <VideoMuteButton styles = { videoButtonStyles } />
             </View>
         );
 

@@ -43,6 +43,10 @@ export default class VideoMuteButton extends AbstractVideoMuteButton {
             this._videoMutedListener);
     }
 
+    _isDisabled() {
+        return !this.state.videoAvailable;
+    }
+
     _isVideoMuted() {
         return this.state.videoMuted;
     }

@@ -21,7 +21,7 @@ import {
  *
  * @extends AbstractVideoMuteButton
  */
-class StatefulVideoMuteButton extends AbstractVideoMuteButton {
+class VideoMuteButton extends AbstractVideoMuteButton {
 
     _isDisabled() {
         return this.props._audioOnly;
@@ -72,12 +72,12 @@ function _mergeProps(stateProps, dispatchProps, ownProps) {
     return props;
 }
 
-StatefulVideoMuteButton = translate(
-    connect(_mapStateToProps, undefined, _mergeProps)(StatefulVideoMuteButton));
+VideoMuteButton = translate(
+    connect(_mapStateToProps, undefined, _mergeProps)(VideoMuteButton));
 
-StatefulVideoMuteButton.defaultProps = {
+VideoMuteButton.defaultProps = {
     label: 'toolbar.videomute',
     tooltip: 'toolbar.videomute'
 };
 
-export default StatefulVideoMuteButton;
+export default VideoMuteButton;
