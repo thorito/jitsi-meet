@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-#import <React/RCTBridge.h>
-#import <React/RCTEventEmitter.h>
 #import <React/RCTUtils.h>
 
 #import "JitsiMeetView+Private.h"
 
 #import "InviteSearch.h"
+#import "InviteSearch+Private.h"
 
 // The events emitted/supported by InviteSearch:
 static NSString * const InviteSearchPerformQueryAction = @"performQueryAction";
 static NSString * const InviteSearchPerformSubmitInviteAction = @"performSubmitInviteAction";
-
-
-@interface InviteSearch : RCTEventEmitter
-
-@end
-
 
 @interface InviteSearchController ()
 
@@ -52,18 +45,16 @@ static NSString * const InviteSearchPerformSubmitInviteAction = @"performSubmitI
 
 @implementation InviteSearch
 
+RCT_EXPORT_MODULE();
+
 static NSMutableDictionary* searchControllers;
 
-RCT_EXTERN void RCTRegisterModule(Class);
-
-+ (void)load {
-    RCTRegisterModule(self);
-
-    searchControllers = [[NSMutableDictionary alloc] init];
-}
-
-+ (NSString *)moduleName {
-    return @"InviteSearch";
+-(instancetype)init {
+    self = [super init];
+    if (self) {
+        searchControllers = [[NSMutableDictionary alloc] init];
+    }
+    return self;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -134,16 +125,17 @@ RCT_EXPORT_METHOD(receivedResults:(NSArray *)results forQuery:(NSString *)query 
     return searchController;
 }
 
+- (void)invitePeople:(NSArray<NSDictionary *> * _Nonnull)items
+           withScope:(NSString * _Nonnull)scope {
+    [self sendEventWithName:InviteSearchPerformSubmitInviteAction body:@{ @"selectedItems": items, @"inviteScope": scope }];
+}
+
 - (void)performQuery:(NSString * _Nonnull)query inviteScope:(NSString * _Nonnull)inviteScope  {
     [self sendEventWithName:InviteSearchPerformQueryAction body:@{ @"query": query, @"inviteScope": inviteScope }];
 }
 
 - (void)cancelSearchForInviteScope:(NSString * _Nonnull)inviteScope {
     [searchControllers removeObjectForKey:inviteScope];
-}
-
-- (void)submitSelectedItems:(NSArray<NSDictionary *> * _Nonnull)items inviteScope:(NSString * _Nonnull)inviteScope {
-    [self sendEventWithName:InviteSearchPerformSubmitInviteAction body:@{ @"selectedItems": items, @"inviteScope": inviteScope }];
 }
 
 @end
@@ -181,7 +173,7 @@ RCT_EXPORT_METHOD(receivedResults:(NSArray *)results forQuery:(NSString *)query 
         }
     }
 
-    [self.module submitSelectedItems:items inviteScope:self.identifier];
+    [self.module invitePeople:items withScope:self.identifier];
 }
 
 - (void)didReceiveResults:(NSArray<NSDictionary *> *)results forQuery:(NSString *)query {
