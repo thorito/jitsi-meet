@@ -1,6 +1,8 @@
-import PropTypes from 'prop-types';
+// @flow
+
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import type { Dispatch } from 'redux';
 
 import { Audio, MEDIA_TYPE } from '../../../base/media';
 import {
@@ -19,28 +21,41 @@ import styles from './styles';
 import VideoMutedIndicator from './VideoMutedIndicator';
 
 /**
+ * Thumbnail component's property types.
+ */
+type Props = {
+
+    /**
+     * The audio track this {@code Thumbnail} will render.
+     */
+    _audioTrack: Object,
+
+    /**
+     * The audio track this {@code Thumbnail} will render.
+     */
+    _videoTrack: Object,
+
+    /**
+     * Redux dispatch function.
+     */
+    dispatch: Dispatch<*>,
+
+    /**
+     * The conference participant this {@code Thumbnail} represents.
+     */
+    participant: Object
+};
+
+/**
  * React component for video thumbnail.
  *
  * @extends Component
  */
-class Thumbnail extends Component {
-    /**
-     * Thumbnail component's property types.
-     *
-     * @static
-     */
-    static propTypes = {
-        _audioTrack: PropTypes.object,
-        _largeVideo: PropTypes.object,
-        _videoTrack: PropTypes.object,
-        dispatch: PropTypes.func,
-        participant: PropTypes.object
-    };
-
+class Thumbnail extends Component<Props> {
     /**
      * Initializes new Video Thumbnail component.
      *
-     * @param {Object} props - Component props.
+     * @param {Props} props - Component props.
      */
     constructor(props) {
         super(props);
@@ -56,10 +71,11 @@ class Thumbnail extends Component {
      * @returns {ReactElement}
      */
     render() {
-        const audioTrack = this.props._audioTrack;
-        const largeVideo = this.props._largeVideo;
-        const participant = this.props.participant;
-        const videoTrack = this.props._videoTrack;
+        const {
+            _audioTrack: audioTrack,
+            _videoTrack: videoTrack,
+            participant
+        } = this.props;
 
         let style = styles.thumbnail;
 
@@ -79,8 +95,6 @@ class Thumbnail extends Component {
         const audioMuted = !audioTrack || audioTrack.muted;
         const renderAudio = !audioMuted && !audioTrack.local;
         const participantId = participant.id;
-        const participantInLargeVideo
-            = participantId === largeVideo.participantId;
         const videoMuted = !videoTrack || videoTrack.muted;
 
         return (
@@ -96,7 +110,6 @@ class Thumbnail extends Component {
                 <ParticipantView
                     avatarSize = { AVATAR_SIZE }
                     participantId = { participantId }
-                    tintEnabled = { participantInLargeVideo }
                     zOrder = { 1 } />
 
                 { participant.role === PARTICIPANT_ROLE.MODERATOR
@@ -116,6 +129,8 @@ class Thumbnail extends Component {
             </Container>
         );
     }
+
+    _onClick: () => void;
 
     /**
      * Handles click/tap event on the thumbnail.
@@ -138,15 +153,10 @@ class Thumbnail extends Component {
  * @private
  * @returns {{
  *      _audioTrack: Track,
- *      _largeVideo: Object,
  *      _videoTrack: Track
  *  }}
  */
 function _mapStateToProps(state, ownProps) {
-    // We need read-only access to the state of features/large-video so that the
-    // filmstrip doesn't render the video of the participant who is rendered on
-    // the stage i.e. as a large video.
-    const largeVideo = state['features/large-video'];
     const tracks = state['features/base/tracks'];
     const id = ownProps.participant.id;
     const audioTrack
@@ -156,7 +166,6 @@ function _mapStateToProps(state, ownProps) {
 
     return {
         _audioTrack: audioTrack,
-        _largeVideo: largeVideo,
         _videoTrack: videoTrack
     };
 }

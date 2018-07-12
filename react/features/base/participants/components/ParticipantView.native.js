@@ -55,6 +55,11 @@ type Props = {
     _connectionStatus: string,
 
     /**
+     * Whether the participat is being displayed in {@link LargeVideo} or not.
+     */
+    _participantInLargeVideo: boolean,
+
+    /**
      * The name of the participant which this component represents.
      *
      * @private
@@ -93,12 +98,6 @@ type Props = {
      * The function to translate human-readable text.
      */
     t: Function,
-
-    /**
-     * If true, a tinting will be applied to the view, regardless of video or
-     * avatar is rendered.
-     */
-    tintEnabled: boolean,
 
     /**
      * The test hint id which can be used to locate the {@code ParticipantView}
@@ -192,6 +191,7 @@ class ParticipantView extends Component<Props> {
             onPress,
             _avatar: avatar,
             _connectionStatus: connectionStatus,
+            _participantInLargeVideo: participantInLargeVideo,
             _videoTrack: videoTrack
         } = this.props;
 
@@ -212,11 +212,6 @@ class ParticipantView extends Component<Props> {
 
         // Is the avatar to be rendered?
         const renderAvatar = Boolean(!renderVideo && avatar);
-
-        // If the connection has problems, we will "tint" the video / avatar.
-        const useTint
-            = connectionStatus !== JitsiParticipantConnectionStatus.ACTIVE
-                || this.props.tintEnabled;
 
         const testHintId
             = this.props.testHintId
@@ -250,9 +245,7 @@ class ParticipantView extends Component<Props> {
                         size = { this.props.avatarSize }
                         uri = { avatar } /> }
 
-                { useTint
-
-                    // If the connection has problems, tint the video / avatar.
+                { participantInLargeVideo
                     && <TintedView /> }
 
                 { this.props.useConnectivityInfoLabel
@@ -274,6 +267,7 @@ class ParticipantView extends Component<Props> {
  *     _audioOnly: boolean,
  *     _avatar: string,
  *     _connectionStatus: string,
+ *     _participantInLargeVideo: boolean,
  *     _participantName: string,
  *     _videoTrack: Track
  * }}
@@ -281,13 +275,16 @@ class ParticipantView extends Component<Props> {
 function _mapStateToProps(state, ownProps) {
     const { participantId } = ownProps;
     const participant = getParticipantById(state, participantId);
+    const largeVideo = state['features/large-video'];
     let avatar;
     let connectionStatus;
+    let participantInLargeVideo;
     let participantName;
 
     if (participant) {
         avatar = getAvatarURL(participant);
         connectionStatus = participant.connectionStatus;
+        participantInLargeVideo = participantId === largeVideo.participantId;
         participantName = getParticipantDisplayName(state, participant.id);
 
         // Avatar (on React Native) now has the ability to generate an
@@ -312,6 +309,7 @@ function _mapStateToProps(state, ownProps) {
         _connectionStatus:
             connectionStatus
                 || JitsiParticipantConnectionStatus.ACTIVE,
+        _participantInLargeVideo: Boolean(participantInLargeVideo),
         _participantName: participantName,
         _videoTrack:
             getTrackByMediaTypeAndParticipant(
