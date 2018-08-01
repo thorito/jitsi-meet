@@ -30,6 +30,8 @@ import VideoSwitch from './VideoSwitch';
 import WelcomePageLists from './WelcomePageLists';
 import WelcomePageSideBar from './WelcomePageSideBar';
 
+import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
+
 /**
  * The native container rendering the welcome page.
  *
@@ -55,6 +57,8 @@ class WelcomePage extends AbstractWelcomePage {
         // Specially bind functions to avoid function definition on render.
         this._onFieldBlur = this._onFieldFocusChange.bind(this, false);
         this._onFieldFocus = this._onFieldFocusChange.bind(this, true);
+
+        this._signIn = this._signIn.bind(this);
     }
 
     /**
@@ -130,6 +134,11 @@ class WelcomePage extends AbstractWelcomePage {
                                 this._renderHintBox()
                             }
                         </View>
+                        <GoogleSigninButton
+                            style={{ width: 212, height: 48 }}
+                            size={GoogleSigninButton.Size.Standard}
+                            color={GoogleSigninButton.Color.Auto}
+                            onPress={this._signIn} />
                     </SafeAreaView>
                     <WelcomePageLists disabled = { this.state._fieldFocused } />
                     <SettingsView />
@@ -137,6 +146,30 @@ class WelcomePage extends AbstractWelcomePage {
                 <WelcomePageSideBar />
             </LocalVideoTrackUnderlay>
         );
+    }
+
+    /**
+     * TODO.
+     */
+    _signIn() {
+        console.warn('AAAAAAA');
+        GoogleSignin.configure({})
+            .then(() => {
+                console.log('CONFIGURED!');
+                GoogleSignin.signIn()
+                .then(user => {
+                    console.log('XXXXX');
+                    console.log(user);
+                })
+                .catch(e => {
+                    console.log('ERROR');
+                    console.log(e);
+                });
+            })
+            .catch(e => {
+                console.log('CONFIGURE ERROR');
+                console.log(e);
+            });
     }
 
     /**

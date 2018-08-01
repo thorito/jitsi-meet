@@ -61,6 +61,7 @@
     "react-native-calendar-events": "github:jitsi/react-native-calendar-events#cad37355f36d17587d84af72b0095e8cc5fd3df9",
     "react-native-callstats": "3.52.0",
     "react-native-fast-image": "4.0.14",
+    "react-native-google-signin": "^1.0.0-rc1",
     "react-native-immersive": "1.1.0",
     "react-native-keep-awake": "2.0.6",
     "react-native-linear-gradient": "2.4.0",
