@@ -1,6 +1,6 @@
-import BackgroundTimer from 'react-native-background-timer';
 import '@webcomponents/url'; // Polyfill for URL constructor
 
+import Timers from './Timers';
 import { Platform } from '../../react';
 
 // XXX The library lib-jitsi-meet utilizes window.localStorage at the time of
@@ -440,9 +440,9 @@ function _visitNode(node, callback) {
     // Required by:
     // - lib-jitsi-meet
     // - Strophe
-    global.clearTimeout = BackgroundTimer.clearTimeout.bind(BackgroundTimer);
-    global.clearInterval = BackgroundTimer.clearInterval.bind(BackgroundTimer);
-    global.setInterval = BackgroundTimer.setInterval.bind(BackgroundTimer);
-    global.setTimeout = (fn, ms = 0) => BackgroundTimer.setTimeout(fn, ms);
+    global.clearTimeout = Timers.clearTimeout.bind(Timers);
+    global.clearInterval = Timers.clearInterval.bind(Timers);
+    global.setInterval = Timers.setInterval.bind(Timers);
+    global.setTimeout = Timers.setTimeout.bind(Timers);
 
 })(global || window || this); // eslint-disable-line no-invalid-this
