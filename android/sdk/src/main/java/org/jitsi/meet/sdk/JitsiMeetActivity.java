@@ -106,10 +106,16 @@ public class JitsiMeetActivity
         JitsiMeetView view = initializeView();
 
         if (view != null) {
-            // XXX Allow extenders who override initializeView() to configure
-            // the view before the first loadURL(). Probably works around a
-            // problem related to ReactRootView#setAppProperties().
-            view.loadURL(null);
+            Bundle options = null;
+            Intent intent = getIntent();
+            if (intent != null) {
+                options = intent.getExtras();
+                if (options.isEmpty()) {
+                    options = null;
+                }
+            }
+
+            view.loadURLObject(options);
 
             this.view = view;
             setContentView(this.view);
