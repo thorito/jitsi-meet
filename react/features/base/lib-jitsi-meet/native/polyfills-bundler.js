@@ -1,8 +1,12 @@
-(global => {
+// __dirname and __filename
+//
+// Required by:
+// - lib-jitsi-meet
+// - jitsi-meet-logger
+if (typeof __dirname === 'undefined') {
+    global.__dirname = '/';
+}
 
-    // __filename
-    if (typeof global.__filename === 'undefined') {
-        global.__filename = '__filename';
-    }
-
-})(global || window || this); // eslint-disable-line no-invalid-this
+if (typeof __filename === 'undefined') {
+    global.__filename = '';
+}
