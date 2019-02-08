@@ -47,87 +47,20 @@ public class JitsiMeetFragment extends Fragment {
     private Bundle colorScheme;
 
     /**
-     * The default base {@code URL} used to join a conference when a partial URL
-     * (e.g. a room name only) is specified. The value is used only while
-     * {@link #view} equals {@code null}.
-     */
-    private URL defaultURL;
-
-    /**
      * Instance of the {@link JitsiMeetView} which this activity will display.
      */
     private JitsiMeetView view;
 
-    /**
-     * Whether Picture-in-Picture is enabled. The value is used only while
-     * {@link #view} equals {@code null}.
-     */
-    private Boolean pictureInPictureEnabled;
-
-    /**
-     * Whether the Welcome page is enabled. The value is used only while
-     * {@link #view} equals {@code null}.
-     */
-    private boolean welcomePageEnabled;
-
-    /**
-     *
-     * @see JitsiMeetView#getDefaultURL()
-     */
-    public URL getDefaultURL() {
-        return view == null ? defaultURL : view.getDefaultURL();
-    }
-
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.view = initializeView();
-
-        return this.view;
-    }
-
-    /**
-     * Initializes a new {@link JitsiMeetView} instance.
-     *
-     * @return a new {@code JitsiMeetView} instance.
-     */
-    protected JitsiMeetView initializeView() {
-        JitsiMeetView view = new JitsiMeetView(getActivity());
-
-        // XXX Before calling JitsiMeetView#loadURL, make sure to call whatever
-        // is documented to need such an order in order to take effect:
-        view.setColorScheme(colorScheme);
-        view.setDefaultURL(defaultURL);
-        if (pictureInPictureEnabled != null) {
-            view.setPictureInPictureEnabled(
-                pictureInPictureEnabled.booleanValue());
-        }
-        view.setWelcomePageEnabled(welcomePageEnabled);
-
-        return view;
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return this.view = new JitsiMeetView(getActivity());
     }
 
     public JitsiMeetView getJitsiView() {
         return view;
-    }
-
-    /**
-     *
-     * @see JitsiMeetView#isPictureInPictureEnabled()
-     */
-    public boolean isPictureInPictureEnabled() {
-        return
-            view == null
-                ? pictureInPictureEnabled
-                : view.isPictureInPictureEnabled();
-    }
-
-    /**
-     *
-     * @see JitsiMeetView#isWelcomePageEnabled()
-     */
-    public boolean isWelcomePageEnabled() {
-        return view == null ? welcomePageEnabled : view.isWelcomePageEnabled();
     }
 
     @Override
@@ -191,43 +124,6 @@ public class JitsiMeetFragment extends Fragment {
             this.colorScheme = colorScheme;
         } else {
             view.setColorScheme(colorScheme);
-        }
-    }
-
-    /**
-     *
-     * @see JitsiMeetView#setDefaultURL(URL)
-     */
-    public void setDefaultURL(URL defaultURL) {
-        if (view == null) {
-            this.defaultURL = defaultURL;
-        } else {
-            view.setDefaultURL(defaultURL);
-        }
-    }
-
-    /**
-     *
-     * @see JitsiMeetView#setPictureInPictureEnabled(boolean)
-     */
-    public void setPictureInPictureEnabled(boolean pictureInPictureEnabled) {
-        if (view == null) {
-            this.pictureInPictureEnabled
-                = Boolean.valueOf(pictureInPictureEnabled);
-        } else {
-            view.setPictureInPictureEnabled(pictureInPictureEnabled);
-        }
-    }
-
-    /**
-     *
-     * @see JitsiMeetView#setWelcomePageEnabled(boolean)
-     */
-    public void setWelcomePageEnabled(boolean welcomePageEnabled) {
-        if (view == null) {
-            this.welcomePageEnabled = welcomePageEnabled;
-        } else {
-            view.setWelcomePageEnabled(welcomePageEnabled);
         }
     }
 }

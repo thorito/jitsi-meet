@@ -27,9 +27,10 @@ import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 
 import org.jitsi.meet.sdk.JitsiMeet;
-import org.jitsi.meet.sdk.JitsiMeetFragment;
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface;
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate;
+import org.jitsi.meet.sdk.JitsiMeetFragment;
+import org.jitsi.meet.sdk.JitsiMeetOptions;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.react.modules.core.PermissionListener;
@@ -55,10 +56,23 @@ public class MainActivity extends FragmentActivity implements JitsiMeetActivityI
         return (JitsiMeetFragment) getSupportFragmentManager().findFragmentById(R.id.jitsiFragment);
     }
 
+    private JitsiMeetOptions createOptions() {
+        return new JitsiMeetOptions()
+                .setWelcomePageEnabled(true)
+                .setServerURL("https://meet.jit.si");
+    }
+
     private void initialize() {
         JitsiMeetFragment fragment = getFragment();
-        fragment.setWelcomePageEnabled(true);
-        fragment.getJitsiView().join(getIntentUrl(getIntent()));
+        JitsiMeetOptions options = createOptions();
+        String intentUrl = getIntentUrl(getIntent());
+
+        if (intentUrl != null) {
+            options.setRoom(intentUrl);
+        }
+
+        // Joining without the room option displays the welcome page
+        fragment.getJitsiView().join(options);
     }
 
     private @Nullable String getIntentUrl(Intent intent) {
@@ -113,7 +127,9 @@ public class MainActivity extends FragmentActivity implements JitsiMeetActivityI
         String url;
 
         if ((url = getIntentUrl(intent)) != null) {
-            getFragment().getJitsiView().join(url);
+            getFragment()
+                .getJitsiView().join(
+                    createOptions().setRoom(url));
             return;
         }
 
@@ -145,7 +161,10 @@ public class MainActivity extends FragmentActivity implements JitsiMeetActivityI
                     }
 
                     if (dynamicLink != null) {
-                        getFragment().getJitsiView().join(dynamicLink.toString());
+                        getFragment()
+                            .getJitsiView()
+                            .join(createOptions()
+                                    .setRoom(dynamicLink.toString()));
                     }
                 });
         }
