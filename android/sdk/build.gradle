@@ -142,6 +142,13 @@ android.libraryVariants.all { def variant ->
                 from(jsBundleDir)
                 into(assetsDir)
             }
+        } else {
+            // Start the dev bundler
+
+            commandLine(
+                    "open",
+                    "-g",
+                    "../../node_modules/react-native/scripts/launchPackager.command")
         }
     }
 
@@ -154,6 +161,12 @@ android.libraryVariants.all { def variant ->
                 into(variant.mergeResources.outputDir)
             }
         }
+    }
+
+    def currentBundleTask = tasks.create(
+            name: "bundle${targetName}JsAndAssets",
+            type: Exec) {
+    }
     }
 }
 
