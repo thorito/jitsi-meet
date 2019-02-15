@@ -2,10 +2,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { getDefaultURL } from '../../app';
 import { translate } from '../../base/i18n';
 import { NavigateSectionList } from '../../base/react';
 import type { Section } from '../../base/react';
+import { getServerURL } from '../../base/settings';
 
 import { deleteRecentListEntry } from '../actions';
 import { isRecentListEnabled, toDisplayableList } from '../functions';
@@ -119,7 +119,7 @@ class RecentList extends AbstractRecentList<Props> {
  */
 export function _mapStateToProps(state: Object) {
     return {
-        _defaultServerURL: getDefaultURL(state),
+        _defaultServerURL: getServerURL(state),
         _recentList: state['features/recent-list']
     };
 }

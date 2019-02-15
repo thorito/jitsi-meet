@@ -1,7 +1,7 @@
 // @flow
 
-import { getDefaultURL } from '../app';
 import { openDialog } from '../base/dialog';
+import { getServerURL } from '../base/settings';
 import { generateRoomWithoutSeparator } from '../welcome';
 
 import { refreshCalendar } from './actions';
@@ -36,10 +36,10 @@ export function openUpdateCalendarEventDialog(eventId: string) {
  */
 export function updateCalendarEvent(eventId: string) {
     return (dispatch: Dispatch<*>, getState: Function) => {
-        const defaultUrl = getDefaultURL(getState);
+        const serverUrl = getServerURL(getState);
         const roomName = generateRoomWithoutSeparator();
 
-        addLinkToCalendarEntry(getState(), eventId, `${defaultUrl}/${roomName}`)
+        addLinkToCalendarEntry(getState(), eventId, `${serverUrl}/${roomName}`)
         .finally(() => {
             dispatch(refreshCalendar(false, false));
         });

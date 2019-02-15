@@ -7,18 +7,11 @@ import { toURLString } from '../../base/util';
 import { OverlayContainer } from '../../overlay';
 
 import { appNavigate } from '../actions';
-import { getDefaultURL } from '../functions';
 
 /**
  * The type of React {@code Component} props of {@link AbstractApp}.
  */
 export type Props = {
-
-    /**
-     * The default URL {@code AbstractApp} is to open when not in any
-     * conference/room.
-     */
-    defaultURL: string,
 
     /**
      * XXX Refer to the implementation of loadURLObject: in
@@ -51,7 +44,7 @@ export class AbstractApp extends BaseApp<Props, *> {
         this._init.then(() => {
             // If a URL was explicitly specified to this React Component, then
             // open it; otherwise, use a default.
-            this._openURL(toURLString(this.props.url) || this._getDefaultURL());
+            this._openURL(toURLString(this.props.url));
         });
     }
 
@@ -74,7 +67,7 @@ export class AbstractApp extends BaseApp<Props, *> {
                     // XXX Refer to the implementation of loadURLObject: in
                     // ios/sdk/src/JitsiMeetView.m for further information.
                     || previousTimestamp !== currentTimestamp) {
-                this._openURL(currentUrl || this._getDefaultURL());
+                this._openURL(currentUrl);
             }
         });
     }
@@ -96,17 +89,6 @@ export class AbstractApp extends BaseApp<Props, *> {
     }
 
     _createMainElement: (React$Element<*>, Object) => ?React$Element<*>;
-
-    /**
-     * Gets the default URL to be opened when this {@code App} mounts.
-     *
-     * @protected
-     * @returns {string} The default URL to be opened when this {@code App}
-     * mounts.
-     */
-    _getDefaultURL() {
-        return getDefaultURL(this.state.store);
-    }
 
     /**
      * Navigates this {@code AbstractApp} to (i.e. Opens) a specific URL.

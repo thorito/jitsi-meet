@@ -2,24 +2,6 @@
 
 import { NativeModules } from 'react-native';
 
-import { getAppProp } from '../base/app';
-import { toState } from '../base/redux';
-import { getServerURL } from '../base/settings';
-
-/**
- * Retrieves the default URL for the app. This can either come from a prop to
- * the root App component or be configured in the settings.
- *
- * @param {Function|Object} stateful - The redux store or {@code getState}
- * function.
- * @returns {string} - Default URL for the app.
- */
-export function getDefaultURL(stateful: Function | Object) {
-    const state = toState(stateful);
-
-    return getAppProp(state, 'defaultURL') || getServerURL(state);
-}
-
 /**
  * Returns application name.
  *

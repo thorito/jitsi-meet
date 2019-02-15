@@ -1,6 +1,6 @@
 // @flow
 
-import { getDefaultURL } from '../../app';
+import { getServerURL } from '../../base/settings';
 
 import { APP_WILL_MOUNT } from '../app';
 import { SET_ROOM } from '../conference';
@@ -34,9 +34,9 @@ MiddlewareRegistry.register(store => next => action => {
  * @returns {Promise}
  */
 function _appWillMount({ dispatch, getState }) {
-    const defaultURL = parseURIString(getDefaultURL(getState));
+    const serverURL = parseURIString(getServerURL(getState));
 
-    dispatch(addKnownDomains(defaultURL.host));
+    dispatch(addKnownDomains(serverURL.host));
 }
 
 /**

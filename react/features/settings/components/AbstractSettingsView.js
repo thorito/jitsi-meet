@@ -2,8 +2,7 @@
 
 import { Component } from 'react';
 
-import { getDefaultURL } from '../../app';
-import { updateSettings } from '../../base/settings';
+import { getServerURL, updateSettings } from '../../base/settings';
 
 /**
  * The type of the React {@code Component} props of
@@ -174,7 +173,7 @@ export class AbstractSettingsView extends Component<Props> {
  */
 export function _mapStateToProps(state: Object) {
     return {
-        _serverURL: getDefaultURL(state),
+        _serverURL: getServerURL(state),
         _settings: state['features/base/settings'],
         _visible: state['features/settings'].visible
     };

@@ -12,10 +12,9 @@ import {
 } from '../base/config';
 import { setLocationURL } from '../base/connection';
 import { loadConfig } from '../base/lib-jitsi-meet';
+import { getServerURL } from '../base/settings';
 import { parseURIString, toURLString } from '../base/util';
 import { setFatalError } from '../overlay';
-
-import { getDefaultURL } from './functions';
 
 const logger = require('jitsi-meet-logger').getLogger(__filename);
 
@@ -116,7 +115,7 @@ function _appNavigateToOptionalLocation(
     // If the specified location (URI) does not identify a host, use the app's
     // default.
     if (!location || !location.host) {
-        const defaultLocation = parseURIString(getDefaultURL(getState));
+        const defaultLocation = parseURIString(getServerURL(getState));
 
         if (location) {
             location.host = defaultLocation.host;
