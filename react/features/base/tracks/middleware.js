@@ -1,5 +1,6 @@
 // @flow
 
+import JitsiMeetJS from '../lib-jitsi-meet';
 import {
     CAMERA_FACING_MODE,
     MEDIA_TYPE,
@@ -12,13 +13,13 @@ import {
 import { MiddlewareRegistry } from '../redux';
 import UIEvents from '../../../../service/UI/UIEvents';
 
-import { createLocalTracksA } from './actions';
+import { createLocalTracksA, replaceLocalTrack } from './actions';
 import {
     TOGGLE_SCREENSHARING,
     TRACK_REMOVED,
     TRACK_UPDATED
 } from './actionTypes';
-import { getLocalTrack, setTrackMuted } from './functions';
+import { createLocalTracksF, getLocalTrack, getLocalVideoTrack, setTrackMuted } from './functions';
 
 declare var APP: Object;
 
@@ -87,9 +88,7 @@ MiddlewareRegistry.register(store => next => action => {
     }
 
     case TOGGLE_SCREENSHARING:
-        if (typeof APP === 'object') {
-            APP.UI.emitEvent(UIEvents.TOGGLE_SCREENSHARING);
-        }
+        _toggleScreensharing(store);
         break;
 
     case TRACK_REMOVED:
@@ -186,4 +185,33 @@ function _setMuted(store, { ensureTrack, muted }, mediaType: MEDIA_TYPE) {
         // creating local tracks. Adjust the check once they are unified.
         store.dispatch(createLocalTracksA({ devices: [ mediaType ] }));
     }
+}
+
+/**
+ * 
+ * @param {*} store 
+ */
+function _toggleScreensharing(store) {
+    if (typeof APP === 'object') {
+        APP.UI.emitEvent(UIEvents.TOGGLE_SCREENSHARING);
+
+        return;
+    }
+
+    console.log('XXXXX SCREEN SHARING');
+
+    // TODO: check if we need to create a video track or a SS track
+    //createLocalTracksF({ devices: [ 'desktop' ] }, /* firePermissionPromptIsShownEvent */ false, store)
+    JitsiMeetJS.createLocalTracks({ devices: [ 'desktop' ] })
+        .catch(error => {
+            console.log('ERROR creating SS stream ' + error);
+        })
+        .then(tracks => {
+            console.log('GOT SOME TRACKS!' + tracks);
+            //console.log('GOT A STREAM!!!! ' + stream);
+            const track = tracks[0];
+            const currentTrack = getLocalVideoTrack(store.getState()['features/base/tracks']).jitsiTrack;
+
+            store.dispatch(replaceLocalTrack(currentTrack, track));
+        });
 }

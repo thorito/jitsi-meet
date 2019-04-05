@@ -79,7 +79,7 @@ function _appStateChanged(dispatch: Function, appState: string) {
         return;
     }
 
-    dispatch(_setBackgroundVideoMuted(muted));
+    //dispatch(_setBackgroundVideoMuted(muted));
 }
 
 /**

@@ -19,6 +19,7 @@ import { TileViewButton } from '../../../video-layout';
 
 import AudioOnlyButton from './AudioOnlyButton';
 import RaiseHandButton from './RaiseHandButton';
+import ScreenSharingButton from './ScreenSharingButton';
 import ToggleCameraButton from './ToggleCameraButton';
 
 declare var __DEV__;
@@ -98,6 +99,7 @@ class OverflowMenu extends Component<Props> {
                 <InviteButton { ...buttonProps } />
                 <InfoDialogButton { ...buttonProps } />
                 <RaiseHandButton { ...buttonProps } />
+                <ScreenSharingButton { ...buttonProps } />
             </BottomSheet>
         );
     }

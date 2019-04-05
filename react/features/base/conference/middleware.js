@@ -10,6 +10,7 @@ import {
     sendAnalytics
 } from '../../analytics';
 import { CONNECTION_ESTABLISHED, CONNECTION_FAILED } from '../connection';
+import { LIB_DID_INIT, JitsiMeetJS } from '../lib-jitsi-meet';
 import { setVideoMuted, VIDEO_MUTISM_AUTHORITY } from '../media';
 import {
     getLocalParticipant,
@@ -27,6 +28,7 @@ import {
     conferenceLeft,
     conferenceWillLeave,
     createConference,
+    setDesktopSharingEnabled,
     setLastN,
     setSubject
 } from './actions';
@@ -86,6 +88,9 @@ MiddlewareRegistry.register(store => next => action => {
 
     case DATA_CHANNEL_OPENED:
         return _syncReceiveVideoQuality(store, next, action);
+
+    case LIB_DID_INIT:
+        return _libDidInit(store, next, action);
 
     case PARTICIPANT_UPDATED:
         return _updateLocalParticipantInConference(store, next, action);
@@ -397,6 +402,21 @@ function _isMaybeSplitBrainError(getState, action) {
     }
 
     return false;
+}
+
+/**
+ * 
+ * @param {*} param0 
+ * @param {*} next 
+ * @param {*} action 
+ */
+function _libDidInit({ dispatch }, next, action) {
+    const result = next(action);
+
+    // Initialize Desktop sharing support.
+    dispatch(setDesktopSharingEnabled(JitsiMeetJS.isDesktopSharingEnabled()));
+
+    return result;
 }
 
 /**
