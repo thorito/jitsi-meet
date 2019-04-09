@@ -56,7 +56,17 @@ const config = {
 
                         // Tell babel to avoid compiling imports into CommonJS
                         // so that webpack may do tree shaking.
-                        { modules: false }
+                        { modules: false,
+
+                            // Specify our target browsers so no transpiling is
+                            // done unnecessarily. For browsers not specified
+                            // here, the ES2015+ profile will be used.
+                            targets: {
+                                chrome: 58,
+                                firefox: 54,
+                                safari: 11
+                            }
+                        }
                     ],
                     require.resolve('@babel/preset-flow'),
                     require.resolve('@babel/preset-react')
@@ -116,7 +126,7 @@ const config = {
 module.exports = [
     Object.assign({}, config, {
         entry: {
-            'app.bundle': [ '@babel/polyfill', './app.js' ],
+            'app.bundle': './app.js',
 
             'device_selection_popup_bundle':
                 './react/features/settings/popup.js',
