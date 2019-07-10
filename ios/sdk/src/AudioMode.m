@@ -1,6 +1,5 @@
 /*
- * Copyright @ 2018-present 8x8, Inc.
- * Copyright @ 2017-2018 Atlassian Pty Ltd
+ * Copyright @ 2017-present 8x8, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +76,9 @@ RCT_EXPORT_MODULE();
         videoCallConfig = [[RTCAudioSessionConfiguration alloc] init];
         videoCallConfig.category = AVAudioSessionCategoryPlayAndRecord;
         videoCallConfig.categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth;
-        videoCallConfig.mode = AVAudioSessionModeVideoChat;
+        videoCallConfig.mode = AVAudioSessionModeVoiceChat;
+        // Don't set AVAudioSessionCategoryOptionDefaultToSpeaker, because it will hide the earpiece
+        // from MPVolumeView.
 
         RTCAudioSession *session = [RTCAudioSession sharedInstance];
         [session addDelegate:self];
@@ -128,6 +129,19 @@ RCT_EXPORT_METHOD(setMode:(int)mode
     activeMode = mode;
 
     if ([self setConfig:config error:&error]) {
+        if (mode == kAudioModeVideoCall) {
+            RTCAudioSession *session = [RTCAudioSession sharedInstance];
+            AVAudioSessionRouteDescription *currentRoute = session.currentRoute;
+            NSLog(@"XXXX");
+            NSLog(@"- Outputs: %@", [currentRoute outputs]);
+            for (AVAudioSessionPortDescription* output in [currentRoute outputs]) {
+                if ([output.portType isEqualToString:AVAudioSessionPortBuiltInReceiver]) {
+                    NSLog(@"OVERRIDE!");
+                    [self setSpeakerOn];
+                    break;
+                }
+            }
+        }
         resolve(nil);
     } else {
         reject(@"setMode", error.localizedDescription, error);
@@ -139,7 +153,16 @@ RCT_EXPORT_METHOD(setMode:(int)mode
 - (void)audioSessionDidChangeRoute:(RTCAudioSession *)session
                             reason:(AVAudioSessionRouteChangeReason)reason
                      previousRoute:(AVAudioSessionRouteDescription *)previousRoute {
-    if (reason == AVAudioSessionRouteChangeReasonCategoryChange) {
+    NSLog(@"XXX Audio route changed. Reason: %lu", (unsigned long)reason);
+    NSLog(@"XXX current outputs: %@", session.currentRoute.outputs);
+    if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+        // We need to adjust our override in case of video mode.
+        dispatch_async(_workerQueue, ^{
+            if (self->activeMode == kAudioModeVideoCall) {
+                [self setSpeakerOn];
+            }
+        });
+    } else if (reason == AVAudioSessionRouteChangeReasonCategoryChange) {
         // The category has changed. Check if it's the one we want and adjust as
         // needed. This notification is posted on a secondary thread, so make
         // sure we switch to our worker thread.
@@ -159,6 +182,20 @@ RCT_EXPORT_METHOD(setMode:(int)mode
 
 - (void)audioSession:(RTCAudioSession *)audioSession didSetActive:(BOOL)active {
     NSLog(@"[AudioMode] Audio session didSetActive:%d", active);
+}
+
+#pragma mark - Helper methods
+
+- (void)setSpeakerOn {
+    NSError *error;
+    RTCAudioSession *session = [RTCAudioSession sharedInstance];
+    [session lockForConfiguration];
+    if ([session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error]) {
+        NSLog(@"Speaker ON");
+    } else {
+        NSLog(@"Error setting speaker ON: %@", error.localizedDescription);
+    }
+    [session unlockForConfiguration];
 }
 
 @end

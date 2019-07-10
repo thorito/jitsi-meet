@@ -348,16 +348,9 @@ class AudioModeModule extends ReactContextBaseJavaModule
             @Override
             public void run() {
                 WritableMap map = Arguments.createMap();
+
                 map.putString("selected", selectedDevice);
-                WritableArray devices = Arguments.createArray();
-                for (String device : availableDevices) {
-                    if (mode == VIDEO_CALL && device.equals(DEVICE_EARPIECE)) {
-                        // Skip earpiece when in video call mode.
-                        continue;
-                    }
-                    devices.pushString(device);
-                }
-                map.putArray("devices", devices);
+                map.putArray("devices", Arguments.fromArray(availableDevices));
 
                 promise.resolve(map);
             }
