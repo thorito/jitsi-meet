@@ -2,8 +2,9 @@
  * Move the @atlaskit/flag container up a little bit so it does not cover the
  * toolbar with the first notification.
  */
-.jIMojv{
-    bottom: calc(#{$newToolbarSizeWithPadding}) !important;
+.eQJQNL,
+.jIMojv {
+    bottom: calc(#{$newToolbarSizeWithPadding} + 20px) !important;
 }
 
 /**
