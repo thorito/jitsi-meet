@@ -154,55 +154,6 @@ function generateURL(domain, options = {}) {
 }
 
 /**
- * Parses the arguments passed to the constructor. If the old format is used
- * the function translates the arguments to the new format.
- *
- * @param {Array} args - The arguments to be parsed.
- * @returns {Object} JS object with properties.
- */
-function parseArguments(args) {
-    if (!args.length) {
-        return {};
-    }
-
-    const firstArg = args[0];
-
-    switch (typeof firstArg) {
-    case 'string': // old arguments format
-    case undefined: {
-        // Not sure which format but we are trying to parse the old
-        // format because if the new format is used everything will be undefined
-        // anyway.
-        const [
-            roomName,
-            width,
-            height,
-            parentNode,
-            configOverwrite,
-            interfaceConfigOverwrite,
-            jwt,
-            onload
-        ] = args;
-
-        return {
-            roomName,
-            width,
-            height,
-            parentNode,
-            configOverwrite,
-            interfaceConfigOverwrite,
-            jwt,
-            onload
-        };
-    }
-    case 'object': // new arguments format
-        return args[0];
-    default:
-        throw new Error('Can\'t parse the arguments!');
-    }
-}
-
-/**
  * Compute valid values for height and width. If a number is specified it's
  * treated as pixel units. If the value is expressed in px, em, pt or
  * percentage, it's used as is.
@@ -262,7 +213,7 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
      * @param {Object} [options.userInfo] - Object containing information about
      * the participant opening the meeting.
      */
-    constructor(domain, ...args) {
+    constructor(domain, options = {}) {
         super();
         const {
             roomName = '',
@@ -276,7 +227,7 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
             invitees,
             devices,
             userInfo
-        } = parseArguments(args);
+        } = options;
         const localStorageContent = jitsiLocalStorage.getItem('jitsiLocalStorage');
 
         this._parentNode = parentNode;
