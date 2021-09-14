@@ -17,6 +17,7 @@ import {
     getRaiseHandsQueue
 } from '../base/participants/functions';
 import { toState } from '../base/redux';
+import { isInBreakoutRoom } from '../breakout-rooms/functions';
 
 import { QUICK_ACTION_BUTTON, REDUCER_KEY, MEDIA_STATE } from './constants';
 
@@ -188,8 +189,9 @@ export function getQuickActionButtonType(participant: Object, isAudioMuted: Bool
 export const shouldRenderInviteButton = (state: Object) => {
     const { disableInviteFunctions } = toState(state)['features/base/config'];
     const flagEnabled = getFeatureFlag(state, INVITE_ENABLED, true);
+    const inBreakoutRoom = isInBreakoutRoom(state);
 
-    return flagEnabled && !disableInviteFunctions;
+    return flagEnabled && !disableInviteFunctions && !inBreakoutRoom;
 };
 
 /**

@@ -59,7 +59,7 @@ type Props = {
     /**
      * True if the participant is the local participant.
      */
-    _local: Boolean,
+    _local: boolean,
 
     /**
      * Whether or not the local participant is moderator.

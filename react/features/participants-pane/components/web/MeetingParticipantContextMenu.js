@@ -11,6 +11,7 @@ import { translate } from '../../../base/i18n';
 import {
     IconCloseCircle,
     IconCrown,
+    IconMeetingUnlocked,
     IconMessage,
     IconMicDisabled,
     IconMicrophone,
@@ -28,6 +29,8 @@ import {
 import { connect } from '../../../base/redux';
 import { withPixelLineHeight } from '../../../base/styles/functions.web';
 import { isParticipantAudioMuted, isParticipantVideoMuted } from '../../../base/tracks';
+import { sendParticipantToRoom } from '../../../breakout-rooms/actions';
+import { getCurrentRoomId, getRooms } from '../../../breakout-rooms/functions';
 import { openChatById } from '../../../chat/actions';
 import { setVolume } from '../../../filmstrip/actions.web';
 import { Drawer, JitsiPortal } from '../../../toolbox/components/web';
@@ -50,6 +53,11 @@ type Props = {
      * Whether or not the participant is audio force muted.
      */
     _isAudioForceMuted: boolean,
+
+    /**
+     * The id of the current room.
+     */
+    _currentRoomId: String,
 
     /**
      * True if the local participant is moderator and false otherwise.
@@ -90,6 +98,11 @@ type Props = {
      * Participant reference
      */
     _participant: Object,
+
+    /**
+     * Rooms reference
+     */
+    _rooms: Array<Object>,
 
     /**
      * A value between 0 and 1 indicating the volume of the participant's
@@ -217,6 +230,8 @@ class MeetingParticipantContextMenu extends Component<Props, State> {
         this._onMuteEveryoneElse = this._onMuteEveryoneElse.bind(this);
         this._onMuteVideo = this._onMuteVideo.bind(this);
         this._onSendPrivateMessage = this._onSendPrivateMessage.bind(this);
+        this._onSendToRoom = this._onSendToRoom.bind(this);
+        this._onStopSharedVideo = this._onStopSharedVideo.bind(this);
         this._position = this._position.bind(this);
         this._onVolumeChange = this._onVolumeChange.bind(this);
         this._onAskToUnmute = this._onAskToUnmute.bind(this);
@@ -314,6 +329,22 @@ class MeetingParticipantContextMenu extends Component<Props, State> {
         overflowDrawer && closeDrawer();
     }
 
+    _onSendToRoom: (room: Object) => void;
+
+    /**
+     * Sends a participant to a room.
+     *
+     * @param {Object} room - The room that the participant should be moved to.
+     * @returns {void}
+     */
+    _onSendToRoom(room: Object) {
+        return () => {
+            const { _participant, dispatch } = this.props;
+
+            dispatch(sendParticipantToRoom(_participant.id, room.id));
+        };
+    }
+
     _position: () => void;
 
     /**
@@ -402,6 +433,7 @@ class MeetingParticipantContextMenu extends Component<Props, State> {
     render() {
         const {
             _isAudioForceMuted,
+            _currentRoomId,
             _isLocalModerator,
             _isChatButtonEnabled,
             _isParticipantModerator,
@@ -410,6 +442,7 @@ class MeetingParticipantContextMenu extends Component<Props, State> {
             _isVideoForceMuted,
             _localVideoOwner,
             _participant,
+            _rooms,
             _volume = 1,
             classes,
             closeDrawer,
@@ -509,6 +542,23 @@ class MeetingParticipantContextMenu extends Component<Props, State> {
                             )
                         }
                     </ContextMenuItemGroup>
+                    {
+                        _isLocalModerator && _rooms?.length > 0 && (
+                            <ContextMenuItemGroup>
+                                {_rooms.map((room: Object) =>
+                                    room.id !== _currentRoomId && <ContextMenuItem
+                                        key = { room.id }
+                                        onClick = { this._onSendToRoom(room) }>
+                                        <ContextMenuIcon src = { IconMeetingUnlocked } />
+                                        <span>{
+                                            t('breakoutRooms.actions.sendToBreakoutRoom',
+                                        { name: room.name || t('breakoutRooms.mainRoom') })
+                                        }</span>
+                                    </ContextMenuItem>
+                                )}
+                            </ContextMenuItemGroup>
+                        )
+                    }
                     { showVolumeSlider
                         && <ContextMenuItemGroup>
                             <VolumeSlider
@@ -571,11 +621,13 @@ function _mapStateToProps(state, ownProps): Object {
     const participant = getParticipantByIdOrUndefined(state,
         overflowDrawer ? drawerParticipant?.participantID : participantID);
 
+    const _currentRoomId = getCurrentRoomId(state);
     const _isLocalModerator = isLocalParticipantModerator(state);
     const _isChatButtonEnabled = isToolbarButtonEnabled('chat', state);
     const _isParticipantVideoMuted = isParticipantVideoMuted(participant, state);
     const _isParticipantAudioMuted = isParticipantAudioMuted(participant, state);
     const _isParticipantModerator = isParticipantModerator(participant);
+    const _rooms = Object.values(getRooms(state));
 
     const { participantsVolume } = state['features/filmstrip'];
     const id = participant?.id;
@@ -583,6 +635,7 @@ function _mapStateToProps(state, ownProps): Object {
 
     return {
         _isAudioForceMuted: isForceMuted(participant, MEDIA_TYPE.AUDIO, state),
+        _currentRoomId,
         _isLocalModerator,
         _isChatButtonEnabled,
         _isParticipantModerator,
@@ -591,6 +644,7 @@ function _mapStateToProps(state, ownProps): Object {
         _isVideoForceMuted: isForceMuted(participant, MEDIA_TYPE.VIDEO, state),
         _localVideoOwner: Boolean(ownerId === localParticipantId),
         _participant: participant,
+        _rooms,
         _volume: isLocal ? undefined : id ? participantsVolume[id] : undefined
     };
 }
