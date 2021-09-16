@@ -1351,7 +1351,10 @@ export default {
         }
     },
 
-    async joinRoom(roomName) {
+    /**
+     * Used by the Breakout Rooms feature to join a breakout room or go back to the main room.
+     */
+    async joinRoom(roomName, isBreakoutRoom = false) {
         this.roomName = roomName;
 
         const { tryCreateLocalTracks, errors } = this.createInitialLocalTracks();
@@ -1364,18 +1367,33 @@ export default {
                 track.mute();
             }
         });
-        this._createRoom(localTracks);
+        this._createRoom(localTracks, isBreakoutRoom);
 
         return new Promise((resolve, reject) => {
             (new ConferenceConnector(resolve, reject)).connect();
         });
     },
 
-    _createRoom(localTracks) {
+    _createRoom(localTracks, isBreakoutRoom = false) {
+        const extraOptions = {};
+
+        if (isBreakoutRoom) {
+            // We must be in a room already.
+            if (!room?.xmpp?.breakoutRoomsComponentAddress) {
+                throw new Error('Breakout Rooms not enabled');
+            }
+
+            // TODO: re-evaluate this. -saghul
+            extraOptions.customDomain = room.xmpp.breakoutRoomsComponentAddress;
+        }
+
         room
             = connection.initJitsiConference(
                 APP.conference.roomName,
-                this._getConferenceOptions());
+                {
+                    ...this._getConferenceOptions(),
+                    ...extraOptions
+                });
 
         // Filter out the tracks that are muted (except on Safari).
         const tracks = browser.isWebKitBased() ? localTracks : localTracks.filter(track => !track.isMuted());
