@@ -8,6 +8,7 @@ import { Avatar } from '../../../base/avatar';
 import { ColorSchemeRegistry } from '../../../base/color-scheme';
 import { BottomSheet, isDialogOpen } from '../../../base/dialog';
 import { KICK_OUT_ENABLED, getFeatureFlag } from '../../../base/flags';
+import { translate } from '../../../base/i18n';
 import {
     getParticipantById,
     getParticipantDisplayName
@@ -92,7 +93,12 @@ type Props = {
     /**
      * Array containing the breakout rooms.
      */
-    _rooms: Array<Object>
+    _rooms: Array<Object>,
+
+    /**
+     * Translation function.
+     */
+    t: Function
 }
 
 // eslint-disable-next-line prefer-const
@@ -127,7 +133,8 @@ class RemoteVideoMenu extends PureComponent<Props> {
             _isParticipantAvailable,
             _rooms,
             _currentRoomId,
-            participantId
+            participantId,
+            t
         } = this.props;
         const buttonProps = {
             afterClick: this._onCancel,
@@ -153,6 +160,11 @@ class RemoteVideoMenu extends PureComponent<Props> {
                 <ConnectionStatusButton { ...buttonProps } />
                 {_rooms.length > 1 && <>
                     <Divider style = { styles.divider } />
+                    <View style = { styles.contextMenuItem }>
+                        <Text style = { styles.contextMenuItemText }>
+                            {t('breakoutRooms.actions.sendToBreakoutRoom')}
+                        </Text>
+                    </View>
                     {_rooms.map(room => _currentRoomId !== room.id && (<SendToBreakoutRoom
                         key = { room.id }
                         room = { room }
@@ -238,6 +250,6 @@ function _mapStateToProps(state, ownProps) {
     };
 }
 
-RemoteVideoMenu_ = connect(_mapStateToProps)(RemoteVideoMenu);
+RemoteVideoMenu_ = translate(connect(_mapStateToProps)(RemoteVideoMenu));
 
 export default RemoteVideoMenu_;

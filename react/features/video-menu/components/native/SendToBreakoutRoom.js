@@ -31,7 +31,6 @@ export type Props = AbstractButtonProps & {
 class SendToBreakoutRoom extends AbstractButton<Props, *> {
     accessibilityLabel = 'breakoutRooms.actions.sendToBreakoutRoom';
     icon = IconRingGroup;
-    label = 'participantsPane.actions.askUnmute';
 
     /**
      * Gets the current label.
@@ -41,9 +40,7 @@ class SendToBreakoutRoom extends AbstractButton<Props, *> {
     _getLabel() {
         const { t, room } = this.props;
 
-        return t('breakoutRooms.actions.sendToBreakoutRoom',
-            { name: room.name || t('breakoutRooms.mainRoom') }
-        );
+        return room.name || t('breakoutRooms.mainRoom');
     }
 
     /**

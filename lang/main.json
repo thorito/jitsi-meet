@@ -49,7 +49,7 @@
             "join": "Join",
             "remove": "Remove",
             "leaveBreakoutRoom": "Leave breakout room",
-            "sendToBreakoutRoom": "Send to {{name}}"
+            "sendToBreakoutRoom": "Send participant to:"
         }
     },
     "calendarSync": {
