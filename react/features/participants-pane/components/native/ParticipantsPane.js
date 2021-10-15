@@ -9,10 +9,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { openDialog } from '../../../base/dialog';
 import { JitsiModal } from '../../../base/modal';
 import {
+    getParticipantCount,
     isLocalParticipantModerator
 } from '../../../base/participants';
 import { equals } from '../../../base/redux';
-import { AddBreakoutRoomButton, LeaveBreakoutRoomButton } from '../../../breakout-rooms/components/native';
+import {
+    AddBreakoutRoomButton,
+    AutoAssignButton,
+    LeaveBreakoutRoomButton
+} from '../../../breakout-rooms/components/native';
 import { CollapsibleRoom } from '../../../breakout-rooms/components/native/CollapsibleRoom';
 import { getCurrentRoomId, getRooms, isInBreakoutRoom } from '../../../breakout-rooms/functions';
 import MuteEveryoneDialog
@@ -47,6 +52,7 @@ const ParticipantsPane = () => {
         .filter((room: Object) => room.id !== currentRoomId)
         .sort((p1: Object, p2: Object) => (p1?.name || '').localeCompare(p2?.name || ''));
     const inBreakoutRoom = useSelector(isInBreakoutRoom);
+    const participantsCount = useSelector(getParticipantCount);
 
     return (
         <JitsiModal
@@ -57,6 +63,11 @@ const ParticipantsPane = () => {
             style = { styles.participantsPane }>
             <LobbyParticipantList />
             <MeetingParticipantList />
+            {!inBreakoutRoom
+                && isLocalModerator
+                && participantsCount > 2
+                && rooms.length > 1
+                && <AutoAssignButton />}
             {inBreakoutRoom && <LeaveBreakoutRoomButton />}
             {_isBreakoutRoomsSupported
                 && rooms.map(room => (<CollapsibleRoom

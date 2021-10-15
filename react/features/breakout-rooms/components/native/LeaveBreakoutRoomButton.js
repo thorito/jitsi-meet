@@ -24,7 +24,7 @@ const LeaveBreakoutRoomButton = () => {
             labelStyle = { styles.leaveButtonLabel }
             mode = 'contained'
             onPress = { onLeave }
-            style = { styles.leaveButton } />
+            style = { styles.transparentButton } />
     );
 };
 

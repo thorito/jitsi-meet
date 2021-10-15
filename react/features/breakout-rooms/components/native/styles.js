@@ -1,30 +1,35 @@
 import BaseTheme from '../../../base/ui/components/BaseTheme.native';
 
+const baseButton = {
+    height: BaseTheme.spacing[6],
+    marginTop: BaseTheme.spacing[2],
+    marginLeft: BaseTheme.spacing[3],
+    marginRight: BaseTheme.spacing[3]
+};
+
+const baseLabel = {
+    fontSize: 15,
+    lineHeight: 24,
+    textTransform: 'capitalize'
+};
+
 /**
  * The styles of the native components of the feature {@code breakout rooms}.
  */
 export default {
 
     addButtonLabel: {
-        fontSize: 15,
-        lineHeight: 24,
-        textTransform: 'capitalize',
+        ...baseLabel,
         color: BaseTheme.palette.text01
     },
 
     addButton: {
-        height: BaseTheme.spacing[6],
-        backgroundColor: BaseTheme.palette.ui03,
-        marginTop: BaseTheme.spacing[2],
-        marginLeft: BaseTheme.spacing[3],
-        marginRight: BaseTheme.spacing[3]
+        ...baseButton,
+        backgroundColor: BaseTheme.palette.ui03
     },
 
     collapsibleRoom: {
-        height: BaseTheme.spacing[6],
-        marginTop: BaseTheme.spacing[2],
-        marginLeft: BaseTheme.spacing[3],
-        marginRight: BaseTheme.spacing[3],
+        ...baseButton,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center'
@@ -47,18 +52,18 @@ export default {
         marginLeft: BaseTheme.spacing[2]
     },
 
-    leaveButton: {
-        height: BaseTheme.spacing[6],
-        backgroundColor: 'transparent',
-        marginTop: BaseTheme.spacing[2],
-        marginLeft: BaseTheme.spacing[3],
-        marginRight: BaseTheme.spacing[3]
+    transparentButton: {
+        ...baseButton,
+        backgroundColor: 'transparent'
     },
 
     leaveButtonLabel: {
-        fontSize: 15,
-        lineHeight: 24,
-        textTransform: 'capitalize',
+        ...baseLabel,
         color: BaseTheme.palette.textError
+    },
+
+    autoAssignLabel: {
+        ...baseLabel,
+        color: BaseTheme.palette.link01
     }
 };
