@@ -11,6 +11,7 @@ import { JitsiModal } from '../../../base/modal';
 import {
     isLocalParticipantModerator
 } from '../../../base/participants';
+import { AddBreakoutRoomButton } from '../../../breakout-rooms/components/native';
 import MuteEveryoneDialog
     from '../../../video-menu/components/native/MuteEveryoneDialog';
 import { close } from '../../actions.native';
@@ -35,6 +36,9 @@ const ParticipantsPane = () => {
         [ dispatch ]);
     const { t } = useTranslation();
 
+    const { hideAddRoomButton } = useSelector(state => state['features/base/config']);
+    const { conference } = useSelector(state => state['features/base/conference']);
+    const _isBreakoutRoomsSupported = Boolean(conference && conference.isBreakoutRoomsSupported());
     return (
         <JitsiModal
             headerProps = {{
@@ -44,6 +48,8 @@ const ParticipantsPane = () => {
             style = { styles.participantsPane }>
             <LobbyParticipantList />
             <MeetingParticipantList />
+            {_isBreakoutRoomsSupported && !hideAddRoomButton && isLocalModerator
+                && <AddBreakoutRoomButton />}
             {
                 isLocalModerator
                 && <View style = { styles.footer }>
