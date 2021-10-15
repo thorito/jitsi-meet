@@ -11,9 +11,10 @@ import { JitsiModal } from '../../../base/modal';
 import {
     isLocalParticipantModerator
 } from '../../../base/participants';
-import { AddBreakoutRoomButton } from '../../../breakout-rooms/components/native';
+import { equals } from '../../../base/redux';
 import { AddBreakoutRoomButton, LeaveBreakoutRoomButton } from '../../../breakout-rooms/components/native';
-import { isInBreakoutRoom } from '../../../breakout-rooms/functions';
+import { CollapsibleRoom } from '../../../breakout-rooms/components/native/CollapsibleRoom';
+import { getCurrentRoomId, getRooms, isInBreakoutRoom } from '../../../breakout-rooms/functions';
 import MuteEveryoneDialog
     from '../../../video-menu/components/native/MuteEveryoneDialog';
 import { close } from '../../actions.native';
@@ -41,6 +42,10 @@ const ParticipantsPane = () => {
     const { hideAddRoomButton } = useSelector(state => state['features/base/config']);
     const { conference } = useSelector(state => state['features/base/conference']);
     const _isBreakoutRoomsSupported = Boolean(conference && conference.isBreakoutRoomsSupported());
+    const currentRoomId = useSelector(getCurrentRoomId);
+    const rooms = Object.values(useSelector(getRooms, equals))
+        .filter((room: Object) => room.id !== currentRoomId)
+        .sort((p1: Object, p2: Object) => (p1?.name || '').localeCompare(p2?.name || ''));
     const inBreakoutRoom = useSelector(isInBreakoutRoom);
 
     return (
@@ -53,6 +58,10 @@ const ParticipantsPane = () => {
             <LobbyParticipantList />
             <MeetingParticipantList />
             {inBreakoutRoom && <LeaveBreakoutRoomButton />}
+            {_isBreakoutRoomsSupported
+                && rooms.map(room => (<CollapsibleRoom
+                    key = { room.id }
+                    room = { room } />))}
             {_isBreakoutRoomsSupported && !hideAddRoomButton && isLocalModerator
                 && <AddBreakoutRoomButton />}
             {
