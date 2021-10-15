@@ -18,5 +18,20 @@ export default {
         marginTop: BaseTheme.spacing[2],
         marginLeft: BaseTheme.spacing[3],
         marginRight: BaseTheme.spacing[3]
+    },
+
+    leaveButton: {
+        height: BaseTheme.spacing[6],
+        backgroundColor: 'transparent',
+        marginTop: BaseTheme.spacing[2],
+        marginLeft: BaseTheme.spacing[3],
+        marginRight: BaseTheme.spacing[3]
+    },
+
+    leaveButtonLabel: {
+        fontSize: 15,
+        lineHeight: 24,
+        textTransform: 'capitalize',
+        color: BaseTheme.palette.textError
     }
 };
