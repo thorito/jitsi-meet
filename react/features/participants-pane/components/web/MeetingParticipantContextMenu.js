@@ -11,11 +11,11 @@ import { translate } from '../../../base/i18n';
 import {
     IconCloseCircle,
     IconCrown,
-    IconMeetingUnlocked,
     IconMessage,
     IconMicDisabled,
     IconMicrophone,
     IconMuteEveryoneElse,
+    IconRingGroup,
     IconShareVideo,
     IconVideoOff
 } from '../../../base/icons';
@@ -195,6 +195,10 @@ const styles = theme => {
             '&:first-child': {
                 marginTop: 15
             }
+        },
+        text: {
+            color: theme.palette.text02,
+            padding: '10px 16px'
         }
     };
 };
@@ -543,17 +547,17 @@ class MeetingParticipantContextMenu extends Component<Props, State> {
                         }
                     </ContextMenuItemGroup>
                     {
-                        _isLocalModerator && _rooms?.length > 0 && (
+                        _isLocalModerator && _rooms?.length > 1 && (
                             <ContextMenuItemGroup>
+                                <div className = { classes.text }>
+                                    {t('breakoutRooms.actions.sendToBreakoutRoom')}
+                                </div>
                                 {_rooms.map((room: Object) =>
                                     room.id !== _currentRoomId && <ContextMenuItem
                                         key = { room.id }
                                         onClick = { this._onSendToRoom(room) }>
-                                        <ContextMenuIcon src = { IconMeetingUnlocked } />
-                                        <span>{
-                                            t('breakoutRooms.actions.sendToBreakoutRoom',
-                                        { name: room.name || t('breakoutRooms.mainRoom') })
-                                        }</span>
+                                        <ContextMenuIcon src = { IconRingGroup } />
+                                        <span>{ room.name || t('breakoutRooms.mainRoom') }</span>
                                     </ContextMenuItem>
                                 )}
                             </ContextMenuItemGroup>
