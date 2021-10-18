@@ -46,9 +46,10 @@ const ParticipantsPane = () => {
 
     const { hideAddRoomButton } = useSelector(state => state['features/base/config']);
     const { conference } = useSelector(state => state['features/base/conference']);
-    const _isBreakoutRoomsSupported = Boolean(conference && conference.isBreakoutRoomsSupported());
+    const breakoutRoomsSupported = conference?.isBreakoutRoomsSupported && conference.isBreakoutRoomsSupported();
+    const _isBreakoutRoomsSupported = Boolean(conference && breakoutRoomsSupported);
     const currentRoomId = useSelector(getCurrentRoomId);
-    const rooms = Object.values(useSelector(getRooms, equals))
+    const rooms: Array<Object> = Object.values(useSelector(getRooms, equals))
         .filter((room: Object) => room.id !== currentRoomId)
         .sort((p1: Object, p2: Object) => (p1?.name || '').localeCompare(p2?.name || ''));
     const inBreakoutRoom = useSelector(isInBreakoutRoom);

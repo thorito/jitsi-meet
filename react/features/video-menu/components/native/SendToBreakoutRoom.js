@@ -15,6 +15,11 @@ export type Props = AbstractButtonProps & {
     dispatch: Function,
 
     /**
+     * ID of the participant to send to breakout room.
+     */
+    participantID: string,
+
+    /**
      * Room to send participant to.
      */
     room: Object,

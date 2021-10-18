@@ -17,7 +17,7 @@ type Props = {
     /**
      * Media state for audio
      */
-    audioMediaState: MediaState,
+    audioMediaState?: MediaState,
 
     /**
      * React children
@@ -47,7 +47,7 @@ type Props = {
     /**
      * True if the participant is local.
      */
-    local: boolean,
+    local?: boolean,
 
     /**
      * Callback to be invoked on pressing the participant item.
@@ -62,12 +62,12 @@ type Props = {
     /**
      * True if the participant have raised hand.
      */
-    raisedHand: boolean,
+    raisedHand?: boolean,
 
     /**
      * Media state for video
      */
-    videoMediaState: MediaState
+    videoMediaState?: MediaState
 }
 
 /**

@@ -28,10 +28,10 @@ export const CollapsibleRoom = ({ room }: Props) => {
     /**
      * Returns a key for a passed item of the list.
      *
-     * @param {string} item - The user ID.
+     * @param {Object} item - The participant.
      * @returns {string} - The user ID.
      */
-    function _keyExtractor(item) {
+    function _keyExtractor(item: Object) {
         return item.jid;
     }
 

@@ -291,7 +291,8 @@ function _mapStateToProps(state: Object) {
     const isPaneOpen = getParticipantsPaneOpen(state);
     const { hideAddRoomButton } = state['features/base/config'];
     const { conference } = state['features/base/conference'];
-    const _isBreakoutRoomsSupported = Boolean(conference && conference.isBreakoutRoomsSupported());
+    const breakoutRoomsSupported = conference?.isBreakoutRoomsSupported && conference.isBreakoutRoomsSupported();
+    const _isBreakoutRoomsSupported = Boolean(conference && breakoutRoomsSupported);
     const _isLocalParticipantModerator = isLocalParticipantModerator(state);
 
     return {
