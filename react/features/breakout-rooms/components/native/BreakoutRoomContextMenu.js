@@ -1,6 +1,5 @@
 // @flow
 
-import _ from 'lodash';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
@@ -61,7 +60,7 @@ const BreakoutRoomContextMenu = ({ room }: Props) => {
                 <Text style = { styles.contextMenuItemText }>{t('breakoutRooms.actions.join')}</Text>
             </TouchableOpacity>
             {!room?.isMainRoom && isLocalModerator
-                && _.isEmpty(room?.participants)
+                && !(room?.participants && Object.keys(room.participants).length > 0)
                 ? <TouchableOpacity
                     onPress = { onRemoveBreakoutRoom }
                     style = { styles.contextMenuItem }>
