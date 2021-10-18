@@ -66,7 +66,9 @@ export const CollapsibleRoom = ({ room }: Props) => {
                         size = { 18 }
                         src = { collapsed ? IconArrowUp : IconArrowDown } />
                 </TouchableOpacity>
-                <Text style = { styles.roomName }>{room.name || t('breakoutRooms.mainRoom')}</Text>
+                <Text style = { styles.roomName }>
+                    {`${room.name || t('breakoutRooms.mainRoom')} (${Object.values(room.participants || {}).length})`}
+                </Text>
             </TouchableOpacity>
             {!collapsed && <FlatList
                 bounces = { false }
