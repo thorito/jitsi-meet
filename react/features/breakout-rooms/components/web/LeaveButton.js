@@ -1,30 +1,35 @@
 // @flow
 
+import { makeStyles } from '@material-ui/styles';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-import { Icon, IconHangup } from '../../../base/icons';
 import { moveToRoom } from '../../actions';
 
-import { RoomLeaveButton } from './styled';
+const useStyles = makeStyles(theme => {
+    return {
+        button: {
+            color: theme.palette.textError
+        }
+    };
+});
 
 export const LeaveButton = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const styles = useStyles();
 
     const onLeave = useCallback(() => {
         dispatch(moveToRoom());
     }, [ dispatch ]);
 
     return (
-        <RoomLeaveButton
+        <button
             aria-label = { t('breakoutRooms.actions.leaveBreakoutRoom') }
+            className = { `breakout-button ${styles.button}` }
             onClick = { onLeave }>
-            <Icon
-                size = { 20 }
-                src = { IconHangup } />
-            <span>{ t('breakoutRooms.actions.leaveBreakoutRoom') }</span>
-        </RoomLeaveButton>
+            {t('breakoutRooms.actions.leaveBreakoutRoom')}
+        </button>
     );
 };
